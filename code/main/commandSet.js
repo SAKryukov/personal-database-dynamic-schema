@@ -15,6 +15,11 @@ const createCommandSet = () => {
         document.title = definitionSet.titleFormat(title);
     }; //showTitle
 
+    commandSet.set("new", new Command("New",
+        () => true,
+        () => window.location.assign("")
+    ));
+
     commandSet.set("open", new Command("Open...",
         () => true, //SA??? if not modified
         () =>
@@ -24,7 +29,7 @@ const createCommandSet = () => {
                     const data = JSON.parse(json);
                     commandSet.table.load(data);
                     commandSet.summary.populate(data);
-                    commandSet.setReadonly(false);
+                    commandSet.table.isReadOnly = false;
                     showTitle(data);
                 } catch (ex) { showException(ex); }
             }, definitionSet.fileIO.filePickerAcceptType())

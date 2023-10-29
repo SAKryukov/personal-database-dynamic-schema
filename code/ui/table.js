@@ -12,11 +12,13 @@ class Table {
     #isReadOnly = false;
     #searchResults = [];
     #indexInSearchResults = -1;
+    #readOnlyEvent = new CustomEvent(definitionSet.eventHandler.readOnlyEvent);
+    #modifiedEvent = new CustomEvent(definitionSet.eventHandler.modifiedEvent);
 
     constructor(parent, contextMenu) {
         const rowCount = 1;
         const propertyCount = 1; //otherwise it will test the component
-    this.#parent = parent;
+        this.#parent = parent;
         this.#table = document.createElement(definitionSet.table.tableTag);
         if (contextMenu != null) {
             let lastPointerX = 0;
@@ -170,6 +172,9 @@ class Table {
         this.#setInitialSelection();
     } //constructor
 
+    #nofityReadonly() { window.dispatchEvent(this.#readOnlyEvent); }
+    #nofityModified() { window.dispatchEvent(this.#modifiedEvent); }
+    
     #setInitialSelection() {
         if (this.#body.rows.length > 0 && this.#body.rows[0].cells.length > 2)
             this.#select(this.#body.rows[0].cells[1]);
@@ -200,7 +205,7 @@ class Table {
             parent.scrollTo(parent.scrollLeft, 0);
         } //if
         if (!noFocus && previouslySelectedCell != null)
-            this.#stopEditing(previouslySelectedCell);
+            this.#stopEditing(previouslySelectedCell, true);
     } //select
 
     #getVisibleCellNumber() {
@@ -268,6 +273,7 @@ class Table {
         if (rowIndex > this.#body.rows.length)
             rowIndex = this.#body.rows.length;
         this.#select(this.#body.rows[rowIndex - 1].cells[cellIndex]);
+        this.#nofityModified();
     } //removeRow
 
     get canInsertRow() {
@@ -284,6 +290,7 @@ class Table {
                 cell.onpointerdown = event => this.#select(event.target);
         } //loop
         this.#renumberRows(rowIndex);
+        this.#nofityModified();
     } //insertRow
 
     get canAddProperty() { return !this.#isReadOnly; }
@@ -293,6 +300,7 @@ class Table {
         this.#headerRow.insertBefore(cell, this.#headerRow.cells[index]);
         for (let rowIndex = 0; rowIndex < this.#body.rows.length; ++rowIndex)
             this.#body.rows[rowIndex].insertCell(index).onpointerdown = event => this.#select(event.target);
+        this.#nofityModified();
     } //addProperty
 
     get canInsertProperty() {
@@ -305,6 +313,7 @@ class Table {
         this.#headerRow.insertBefore(cell, this.#headerRow.cells[index + 1]);
         for (let rowIndex = 0; rowIndex < this.#body.rows.length; ++rowIndex)
             this.#body.rows[rowIndex].insertCell(index + 1).onpointerdown = event => this.#select(event.target);
+        this.#nofityModified();
     } //insertProperty
 
     canShuffleRow(up) {
@@ -324,6 +333,7 @@ class Table {
         this.#body.insertBefore(target, this.#body.rows[newRowIndex]);
         this.#select(this.#body.rows[newRowIndex].cells[cellIndex]);
         this.#renumberRows(newRowIndex <= 0 ? 0 : newRowIndex - 1);
+        this.#nofityModified();
     } //shuffleRow
 
     canShuffleColumn(left) {
@@ -347,6 +357,7 @@ class Table {
             row.insertBefore(movingCell, row.cells[newCellIndex]);
         } //loop
         this.#select(this.#body.rows[rowIndex].cells[newCellIndex]);
+        this.#nofityModified();
     } //shuffleColumn
 
     get canRemoveProperty() {
@@ -361,6 +372,10 @@ class Table {
         if (cellIndex > this.#headerRow.cells.length - 2)
             cellIndex = this.#headerRow.cells.length - 2;
         this.#select(this.#body.rows[rowIndex].cells[cellIndex]);
+        /////
+        const event = new CustomEvent("table", { detail: "removed property", });
+        window.dispatchEvent(event);
+        this.#nofityModified();
     } //removeProperty
 
     #editCell(cell) {
@@ -386,6 +401,8 @@ class Table {
             cell.innerHTML = this.#savedCellData;
         else
             this.#addRowOnEdit(cell);
+        if (!cancel)
+            this.#nofityModified(); 
     } //stopEditing
 
     get canEditSelectedCell() { return this.#selectedCell != null && ! this.#isReadOnly }
@@ -462,7 +479,8 @@ class Table {
         navigator.clipboard.readText().then(value => {
             this.#selectedCell.innerHTML = definitionSet.stringCleanup.toHtml(value);
             this.#addRowOnEdit(this.#selectedCell);
-        });
+            this.#nofityModified();
+        });        
     } //fromClipboard
 
     get canCopyToClipboard() { return this.#selectedCell != null; }
@@ -531,6 +549,6 @@ class Table {
     } //findNext
 
     get isReadOnly() { return this.#isReadOnly; }
-    set isReadOnly(value) { this.#isReadOnly = value; }
+    set isReadOnly(value) { this.#isReadOnly = value; this.#nofityReadonly(); }
 
 } //class Table

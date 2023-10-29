@@ -11,6 +11,10 @@ class Summary {
         this.#updated = updated;
         this.#description = description;
         this.populate({});
+        const modifiedEvent = new CustomEvent(definitionSet.eventHandler.modifiedEvent);
+        const nofityModified = function() { window.dispatchEvent(modifiedEvent); }
+        description.onchange = function() { nofityModified(); };
+        title.onchange = function() { nofityModified(); };
     } //constructor
 
     #getTimeNow() {

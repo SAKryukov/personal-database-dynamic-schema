@@ -5,6 +5,8 @@
 const fileIO = (() => {
 
     const experimentalImplementation = window.showOpenFilePicker && window.showSaveFilePicker;
+    const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
+    const notifyStored = () => window.dispatchEvent(storedEvent);
 
     let previouslyOpenedFilename = null;
     let fileHandleSave = undefined;
@@ -18,6 +20,7 @@ const fileIO = (() => {
             ? fileName
             : this.previouslyOpenedFilename;
         link.click();
+        notifyStored();
     }; //storeFileFallback
 
     const saveExistingFallback = (fileName, content) => {
@@ -57,6 +60,7 @@ const fileIO = (() => {
         handle.createWritable().then(stream => {
             stream.write(content).then(() => {
                 stream.close();
+                notifyStored();
             });
         });
     }; //saveFileWithHandle

@@ -8,6 +8,7 @@
         <script src="ui/menu.js"></script>
         <script src="ui/contextMenu.js"></script>
         <script src="ui/mainMenu.js"></script>
+        <script src="ui/table-events.js"></script>
         <script src="ui/table.js"></script>
         <script src="ui/summary.js"></script>
         <script src="ui/search.js"></script>
@@ -71,7 +72,8 @@
             footer details section p b { display: table-cell; padding-left: 1em; font-weight: normal; padding-bottom: 0.2em; }
             footer details section p:first-child b { padding-top: 0.2em; }
             footer summary { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
-            #read-only { padding-left: 1em; font-weight:bold; }
+            #read-only, #modified { padding-left: 1em; font-weight:bold; }
+            #modified { color: red; }
             footer section { margin-left: 1em; }
             footer section input { padding-left: 1em; padding-right: 1em; }
             footer section button, footer section input { outline: none; border: solid thin gray; height: 2.2em; }
@@ -85,6 +87,7 @@
    
     <nav id="context">
         <section>
+            <nav data-command="new"></nav>
             <nav data-command="open"></nav>
             <nav data-command="save"></nav>
             <nav data-command="save as"></nav>
@@ -117,6 +120,7 @@
             <li accesskey="F"><u>F</u>ile</li>
             <article>
                 <section>
+                    <nav data-command="new"></nav>
                     <nav data-command="open"></nav>
                     <nav data-command="save"></nav>
                     <nav data-command="save as"></nav>
@@ -157,6 +161,7 @@
     <footer>
         <p id="product"></p>
         <p id="read-only">Read-only</p>
+        <p id="modified" title="Modified"></p>
         <details><summary accesskey="U">S<u>u</u>mmary</summary>
             <section>
                 <p><b>Title</b><b><input id="summary-title" /></b></p>

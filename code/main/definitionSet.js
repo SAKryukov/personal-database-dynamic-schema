@@ -8,7 +8,13 @@ const definitionSet = {
     productFormat: function() { return `${this.product} v.&thinsp;${this.version}`; },
     titleFormat: function(value) { return value ? `${value} — ${this.product}` : `${this.product}` },
 
-    readOnlyIndicator: ["Read/Write", "Read-only"],
+    eventHandler: {
+        readOnlyEvent: "readonly",
+        modifiedEvent: "modified",
+        storedEvent: "stored",
+        readOnlyIndicator: ["Read/Write", "Read-only"],
+        modifiedIndicator: "✷",
+    },
 
     search: {
         foundNumber: found => `${found} found`,

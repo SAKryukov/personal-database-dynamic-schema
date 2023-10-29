@@ -30,7 +30,6 @@ window.onload = () => {
     }; //contextMenu.onShown
 
     const mainMenu = new MainMenu(document.querySelector("body > header"), commandSet, "> nav li", "article", "nav", "u");
-
     const summary = new Summary(
         document.querySelector("#summary-title"),
         document.querySelector("#summary-created"),
@@ -38,14 +37,23 @@ window.onload = () => {
         document.querySelector("#summary-description")
     );
     const readOnlyIndicator = document.querySelector("#read-only");
-
+    const modifiedIndicator = document.querySelector("#modified");
     const table = new Table(document.querySelector("main"), contextMenu);
+    
     commandSet.table = table;
-    commandSet.setReadonly = value => {
-        commandSet.table.isReadOnly.value;
-        readOnlyIndicator.textContent = definitionSet.readOnlyIndicator[value ? 1 : 0];
-    } //commandSet.setReadonly
-    commandSet.setReadonly(false);
+
+    window.addEventListener(definitionSet.eventHandler.readOnlyEvent, () => {
+        const value = commandSet.table.isReadOnly;
+        readOnlyIndicator.textContent = definitionSet.eventHandler.readOnlyIndicator[value ? 1 : 0];
+    });
+    window.addEventListener(definitionSet.eventHandler.modifiedEvent, () => {
+        modifiedIndicator.textContent = definitionSet.eventHandler.modifiedIndicator;
+    });
+    window.addEventListener(definitionSet.eventHandler.storedEvent, () => {
+        modifiedIndicator.textContent = null;
+    });
+
+    table.isReadOnly = false;
     if (commandLineParameter && typeof SAPersonalDatabase != typeof undefined) {
         if (SAPersonalDatabase.name != definitionSet.scripting.dataFunctionName())
             definitionSet.scripting.alert();
@@ -53,7 +61,7 @@ window.onload = () => {
         table.load(data);
         summary.populate(data);
         document.title = definitionSet.titleFormat(data.summary.title);
-        commandSet.setReadonly(true);
+        table.isReadOnly = true;
     } //if
     table.focus();
 
