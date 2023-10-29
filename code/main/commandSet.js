@@ -7,9 +7,13 @@ const createCommandSet = () => {
     const notifyStored = () => window.dispatchEvent(storedEvent);
 
     commandSet.actConfirmed = function(action) {
-        let allow = true;
-        if (this.table.isModified) allow = confirm(definitionSet.eventHandler.dataModifiedRequest);
-        if (allow) action();
+        if (this.table.isModified) {
+            modalPopup.show(definitionSet.eventHandler.dataModifiedRequest, [
+                { text: definitionSet.eventHandler.dataModifiedRequestButtonConfirm, action: action },
+                { escape: true, text: definitionSet.eventHandler.dataModifiedRequestButtonCancel }
+            ], {});
+        } else
+            action();
     }; //commandSet.actConfirmed
 
     const showException = exception => {
@@ -25,7 +29,7 @@ const createCommandSet = () => {
 
     commandSet.set("new", new Command("New",
         () => true,
-        () => commandSet.actConfirmed(() => document.location.assign(document.location.pathname)),
+        () => commandSet.actConfirmed(() => commandSet.table.reset() ),
     ));
 
     commandSet.set("open", new Command("Open...",

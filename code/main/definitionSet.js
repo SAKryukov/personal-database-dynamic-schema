@@ -9,7 +9,9 @@ const definitionSet = {
     titleFormat: function(value) { return value ? `${value} — ${this.product}` : `${this.product}` },
 
     eventHandler: {
-        dataModifiedRequest: "Data is modified.\nDo you want to continue?",
+        dataModifiedRequest: "Data is modified.<br/>Do you want to continue?",
+        dataModifiedRequestButtonConfirm: "Proceed",
+        dataModifiedRequestButtonCancel: "Cancel",
         readOnlyEvent: "readonly",
         modifiedEvent: "modified",
         storedEvent: "stored",
@@ -26,6 +28,7 @@ const definitionSet = {
         tableTag: "table",
         rowIndexHeader: "#",
         initialPropertyName: "Name",
+        initialData: { properties: ["Name"], values: [], records: [[]]},
         initialValue: "",
     },
 

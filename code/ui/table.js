@@ -6,6 +6,8 @@ class Table {
     #body = null;
     #fromData = null;
     #addRow = null;
+    #notifyReadonly = null;
+    #notifyModified = null;
     #selectedCell = null;
     #editingCell = null;
     #savedCellData = null;
@@ -19,7 +21,7 @@ class Table {
     constructor(parent, contextMenu) {
         const rowCount = 1;
         const propertyCount = 1; //otherwise it will test the component
-        this.#parent = parent;
+    this.#parent = parent;
         this.#table = document.createElement(definitionSet.table.tableTag);
         if (contextMenu != null) {
             let lastPointerX = 0;
@@ -171,11 +173,10 @@ class Table {
             this.fromClipboard();   
         } //document.body.onpaste
         this.#setInitialSelection();
+        this.#notifyReadonly = function() { window.dispatchEvent(this.#readOnlyEvent); }
+        this.#notifyModified = function() { this.#modified = true; window.dispatchEvent(this.#modifiedEvent); }
     } //constructor
 
-    #nofityReadonly() { window.dispatchEvent(this.#readOnlyEvent); }
-    #nofityModified() { this.#modified = true; window.dispatchEvent(this.#modifiedEvent); }
-    
     #setInitialSelection() {
         if (this.#body.rows.length > 0 && this.#body.rows[0].cells.length > 2)
             this.#select(this.#body.rows[0].cells[1]);
@@ -206,7 +207,7 @@ class Table {
             parent.scrollTo(parent.scrollLeft, 0);
         } //if
         if (!noFocus && previouslySelectedCell != null)
-            this.#stopEditing(previouslySelectedCell, true);
+            this.#stopEditing(previouslySelectedCell, undefined, true);
     } //select
 
     #getVisibleCellNumber() {
@@ -274,7 +275,7 @@ class Table {
         if (rowIndex > this.#body.rows.length)
             rowIndex = this.#body.rows.length;
         this.#select(this.#body.rows[rowIndex - 1].cells[cellIndex]);
-        this.#nofityModified();
+        this.#notifyModified();
     } //removeRow
 
     get canInsertRow() {
@@ -291,7 +292,7 @@ class Table {
                 cell.onpointerdown = event => this.#select(event.target);
         } //loop
         this.#renumberRows(rowIndex);
-        this.#nofityModified();
+        this.#notifyModified();
     } //insertRow
 
     get canAddProperty() { return !this.#isReadOnly; }
@@ -301,7 +302,7 @@ class Table {
         this.#headerRow.insertBefore(cell, this.#headerRow.cells[index]);
         for (let rowIndex = 0; rowIndex < this.#body.rows.length; ++rowIndex)
             this.#body.rows[rowIndex].insertCell(index).onpointerdown = event => this.#select(event.target);
-        this.#nofityModified();
+        this.#notifyModified();
     } //addProperty
 
     get canInsertProperty() {
@@ -314,7 +315,7 @@ class Table {
         this.#headerRow.insertBefore(cell, this.#headerRow.cells[index + 1]);
         for (let rowIndex = 0; rowIndex < this.#body.rows.length; ++rowIndex)
             this.#body.rows[rowIndex].insertCell(index + 1).onpointerdown = event => this.#select(event.target);
-        this.#nofityModified();
+        this.#notifyModified();
     } //insertProperty
 
     canShuffleRow(up) {
@@ -334,7 +335,7 @@ class Table {
         this.#body.insertBefore(target, this.#body.rows[newRowIndex]);
         this.#select(this.#body.rows[newRowIndex].cells[cellIndex]);
         this.#renumberRows(newRowIndex <= 0 ? 0 : newRowIndex - 1);
-        this.#nofityModified();
+        this.#notifyModified();
     } //shuffleRow
 
     canShuffleColumn(left) {
@@ -358,7 +359,7 @@ class Table {
             row.insertBefore(movingCell, row.cells[newCellIndex]);
         } //loop
         this.#select(this.#body.rows[rowIndex].cells[newCellIndex]);
-        this.#nofityModified();
+        this.#notifyModified();
     } //shuffleColumn
 
     get canRemoveProperty() {
@@ -373,10 +374,7 @@ class Table {
         if (cellIndex > this.#headerRow.cells.length - 2)
             cellIndex = this.#headerRow.cells.length - 2;
         this.#select(this.#body.rows[rowIndex].cells[cellIndex]);
-        /////
-        const event = new CustomEvent("table", { detail: "removed property", });
-        window.dispatchEvent(event);
-        this.#nofityModified();
+        this.#notifyModified();
     } //removeProperty
 
     #editCell(cell) {
@@ -394,7 +392,7 @@ class Table {
             this.#stopEditing(cell, escape);
         } //cell.onkeydown
     } //#editCell
-    #stopEditing(cell, cancel) {
+    #stopEditing(cell, cancel, isSelection) {
         this.#table.focus();
         this.#editingCell = null;
         cell.contentEditable = false;
@@ -402,8 +400,8 @@ class Table {
             cell.innerHTML = this.#savedCellData;
         else
             this.#addRowOnEdit(cell);
-        if (!cancel)
-            this.#nofityModified(); 
+        if (!cancel && !isSelection)
+            this.#notifyModified();
     } //stopEditing
 
     get canEditSelectedCell() { return this.#selectedCell != null && ! this.#isReadOnly }
@@ -432,6 +430,9 @@ class Table {
     load(data) {
         this.#fromData(data);
     } //populate
+    reset() {
+        this.load(definitionSet.table.initialData);
+    } //reset
 
     get canStore() { return !this.#isReadOnly; }
     store() {
@@ -480,8 +481,8 @@ class Table {
         navigator.clipboard.readText().then(value => {
             this.#selectedCell.innerHTML = definitionSet.stringCleanup.toHtml(value);
             this.#addRowOnEdit(this.#selectedCell);
-            this.#nofityModified();
-        });        
+            this.#notifyModified();
+        });
     } //fromClipboard
 
     get canCopyToClipboard() { return this.#selectedCell != null; }
@@ -550,9 +551,6 @@ class Table {
     } //findNext
 
     get isReadOnly() { return this.#isReadOnly; }
-    set isReadOnly(value) { this.#isReadOnly = value; this.#nofityReadonly(); }
-
-    get isModified() { return this.#modified; }
-    set isModified(value) { this.#modified = value; }
+    set isReadOnly(value) { this.#isReadOnly = value; this.#notifyReadonly(); }
 
 } //class Table

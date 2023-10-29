@@ -13,7 +13,7 @@
             "type": "pwa-chrome",
             "request": "launch",
             //"file": "index.html",
-            "file": "index.html?/sa/doc/personalDB/contacts.sadb",
+            "file": "index.html",
         }
     ]
 }
