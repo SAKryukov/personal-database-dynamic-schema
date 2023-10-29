@@ -14,6 +14,7 @@ class Table {
     #indexInSearchResults = -1;
     #readOnlyEvent = new CustomEvent(definitionSet.eventHandler.readOnlyEvent);
     #modifiedEvent = new CustomEvent(definitionSet.eventHandler.modifiedEvent);
+    #modified = false;
 
     constructor(parent, contextMenu) {
         const rowCount = 1;
@@ -173,7 +174,7 @@ class Table {
     } //constructor
 
     #nofityReadonly() { window.dispatchEvent(this.#readOnlyEvent); }
-    #nofityModified() { window.dispatchEvent(this.#modifiedEvent); }
+    #nofityModified() { this.#modified = true; window.dispatchEvent(this.#modifiedEvent); }
     
     #setInitialSelection() {
         if (this.#body.rows.length > 0 && this.#body.rows[0].cells.length > 2)
@@ -550,5 +551,8 @@ class Table {
 
     get isReadOnly() { return this.#isReadOnly; }
     set isReadOnly(value) { this.#isReadOnly = value; this.#nofityReadonly(); }
+
+    get isModified() { return this.#modified; }
+    set isModified(value) { this.#modified = value; }
 
 } //class Table

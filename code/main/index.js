@@ -50,6 +50,7 @@ window.onload = () => {
         modifiedIndicator.textContent = definitionSet.eventHandler.modifiedIndicator;
     });
     window.addEventListener(definitionSet.eventHandler.storedEvent, () => {
+        commandSet.table.isModified = false;
         modifiedIndicator.textContent = null;
     });
 
