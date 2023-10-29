@@ -1,0 +1,179 @@
+﻿<!doctype HTML>
+<html lang="en-us">
+    <head>   
+        <script src="main/definitionSet.js"></script>
+        <script src="ui/file-io.js"></script>
+        <script src="ui/command.js"></script>
+        <script src="ui/two-state-button.js"></script>
+        <script src="ui/menu.js"></script>
+        <script src="ui/contextMenu.js"></script>
+        <script src="ui/mainMenu.js"></script>
+        <script src="ui/table.js"></script>
+        <script src="ui/summary.js"></script>
+        <script src="ui/search.js"></script>
+        <script src="main/commandSet.js"></script>
+        <script src="main/index.js"></script>
+        <style>
+            * { font-family: sans-serif; user-select: none; }
+            #error { display: block; color:red; }
+            /* flex: */
+            * { padding: 0; margin: 0; box-sizing: border-box; }
+            html, body { height: 100%; }        
+            body { display: flex; flex-flow: column; height: 100%; }
+            main { flex: auto; overflow: auto; }
+            /* end flex */
+            header { border-bottom: solid 2px black;}
+            th { position: sticky; top: 0; }
+            th {  box-shadow: inset 1px 1px black, 0 1px black; }
+            table, td, th { box-shadow: inset 1px -1px black; }
+            table { border-right: solid 2px black; border-bottom: solid 2px black; outline: none; }
+            table { border-collapse: collapse; }
+            pre, td, th { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
+            td { vertical-align: top; }
+            th { background-color: lightgray; }
+            td, th { white-space: nowrap; }
+            textarea { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
+            /* selection and focus: keep .select in sync with definitionSet.CSS: */
+            table:not(:focus) td:not(.select) { background-color: hsl(0, 0%, 90%); }
+            td:first-child, td:last-child { background-color: lightgray; text-align: right; }
+            td.select { background-color: steelBlue; color: white; }
+            td.found { outline: 6px solid orange; outline-offset: -3px; }
+            td:focus, th:focus { background-color: white; color: navy; outline: none; }
+            nav.select, header > nav li.select { background-color: lightSkyBlue; }
+            table:not(:focus) td:not(:focus).select { opacity: 50%; }
+            /* Menus */
+            header { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
+            #context, header > nav > article { /* context menu */
+                visibility: hidden;
+                outline: none;
+                background-color: white; position: absolute;
+                left: 2em; top: 13em; height: auto;
+                border: solid thin gray;
+            }
+            #context > section, header > nav > article section { padding-top: 0; padding-bottom: 0; }
+            #context > section nav , header > nav > article section nav { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
+            #context > section:not(:last-child), header > nav > article section:not(:last-child) { border-bottom: solid thin gray; }
+            #context > section nav[disabled=true], header > nav > article section nav[disabled=true] { opacity: 50%; }
+            #context > section nav.select[disabled=true], header > nav > article section nav.select[disabled=true] { background-color: lightGray; }
+            /* Main Menu */
+            header > nav { display: inline; padding: 0; }
+            header > nav > li { display: inline; }
+            header > nav u { pointer-events: none; }
+            header > nav li { padding: 1em; padding-top: 0; padding-bottom: 0; }
+            header { padding-left: 0.2em; }
+            /* footer */
+            footer > * { display: inline-block; vertical-align: middle; }
+            footer { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
+            footer > details { display: inline-block; }
+            #product {  vertical-align: middle; }
+            footer details section { display: table; }
+            footer details section p { display: table-row; }
+            footer details section p b { display: table-cell; padding-left: 1em; font-weight: normal; padding-bottom: 0.2em; }
+            footer details section p:first-child b { padding-top: 0.2em; }
+            footer summary { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
+            #read-only { padding-left: 1em; font-weight:bold; }
+            footer section { margin-left: 1em; }
+            footer section input { padding-left: 1em; padding-right: 1em; }
+            footer section button, footer section input { outline: none; border: solid thin gray; height: 2.2em; }
+            footer section button { width: 2.2em; }
+            footer section button:not(:last-of-type) { border-left-width: 0px; }
+            footer button.up { background-color: white; }
+            footer button.down  { background-color: lightgray; }
+        </style>
+    </head>
+<body>
+   
+    <nav id="context">
+        <section>
+            <nav data-command="open"></nav>
+            <nav data-command="save"></nav>
+            <nav data-command="save as"></nav>
+        </section>
+        <section>
+            <nav data-command="copy"></nav>
+            <nav data-command="paste"></nav>
+        </section>
+        <section>
+            <nav data-command="edit selected/commit"></nav>
+            <nav data-command="edit column name/cancel"></nav>
+        </section>
+        <section>
+            <nav data-command="add property"></nav>
+            <nav data-command="insert property"></nav>
+            <nav data-command="remove property"></nav>
+            <nav data-command="insert row"></nav>
+            <nav data-command="remove row"></nav>
+        </section>
+        <section>
+            <nav data-command="shuffle row up">Ctrl+Shift+🠉: Move Row</nav>
+            <nav data-command="shuffle row down">Ctrl+Shift+🠋: Move Row</nav>
+            <nav data-command="shuffle column left">Ctrl+Shift+🠈: Move Column</nav>
+            <nav data-command="shuffle column right">Ctrl+Shift+🠊: Move Column</nav>
+        </section>
+     </nav>
+
+    <header>
+        <nav>
+            <li accesskey="F"><u>F</u>ile</li>
+            <article>
+                <section>
+                    <nav data-command="open"></nav>
+                    <nav data-command="save"></nav>
+                    <nav data-command="save as"></nav>
+                </section>
+            </article>
+        </nav>
+        <nav>
+            <li accesskey="E"><u>E</u>dit</li>
+            <article>
+                <section>
+                    <nav data-command="copy"></nav>
+                    <nav data-command="paste"></nav>
+                </section>
+                <section>
+                    <nav data-command="edit selected/commit"></nav>
+                    <nav data-command="edit column name/cancel"></nav>
+                </section>
+                <section>
+                    <nav data-command="add property"></nav>
+                    <nav data-command="insert property"></nav>
+                    <nav data-command="remove property"></nav>
+                    <nav data-command="insert row"></nav>
+                    <nav data-command="remove row"></nav>
+                </section>
+                <section>
+                    <nav data-command="shuffle row up">Ctrl+Shift+🠉: Move Row</nav>
+                    <nav data-command="shuffle row down">Ctrl+Shift+🠋: Move Row</nav>
+                    <nav data-command="shuffle column left">Ctrl+Shift+🠈: Move Column</nav>
+                    <nav data-command="shuffle column right">Ctrl+Shift+🠊: Move Column</nav>
+                </section>
+            </article>
+        </nav>
+    </header>
+
+    <main>
+    </main>
+
+    <footer>
+        <p id="product"></p>
+        <p id="read-only">Read-only</p>
+        <details><summary accesskey="U">S<u>u</u>mmary</summary>
+            <section>
+                <p><b>Title</b><b><input id="summary-title" /></b></p>
+                <p><b>Created</b><b id="summary-created"></b></p>    
+                <p><b>Modified</b><b id="summary-updated"></b></p>    
+                <p><b>Description</b><b><input id="summary-description"/></b></p>
+            </section>
+        </details>
+        <section>
+            <p><label accesskey="F" for="search"><u>F</u>ind
+                <input id="search" title="Search pattern, press Enter to find"/></label><button id="search-match-case" title="Match case">Aa</button><button id="search-whole-word" title="Match whole word">| |</button><button id="search-regexp" title="Use regular expression">*</button>
+                <span id="search-results"></span>
+                <button id="search-next" title="Find next">F3</button>
+            </p>
+        </section>
+        <p id="error"></p>
+    </footer>
+
+</body>
+</html>

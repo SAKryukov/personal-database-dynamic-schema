@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Live",
+            "request": "launch",
+            "type": "pwa-chrome",
+            "url": "http://localhost:8080?/sa/doc/personalDB/contacts.sadb",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Main",
+            "type": "pwa-chrome",
+            "request": "launch",
+            //"file": "index.html",
+            "file": "index.html?/sa/doc/personalDB/contacts.sadb",
+        }
+    ]
+}

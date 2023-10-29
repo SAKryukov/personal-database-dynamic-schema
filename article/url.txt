@@ -1,0 +1,31 @@
+MDN PWA:
+https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
+
+SPA (Single-page application):
+https://en.wikipedia.org/wiki/Single-page_application
+
+Samples:
+https://github.com/orgs/GoogleChromeLabs
+https://googlechromelabs.github.io/text-editor
+https://github.com/GoogleChromeLabs/text-editor
+
+PWA tutorial:
+https://medium.com/james-johnson/a-simple-progressive-web-app-tutorial-f9708e5f2605
+
+====================================================================================
+
+https://humanstxt.org/
+Example, humans.txt:
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+/* TEAM */
+
+Pete LePage
+Site: https://petelepage.com
+Twitter: @petele
+
+/* TECHNOLOGY COLOPHON */
+
+  HTML5, CSS3, File System Access APIs
+<end of example>
