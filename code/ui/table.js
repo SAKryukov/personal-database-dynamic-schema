@@ -553,4 +553,7 @@ class Table {
     get isReadOnly() { return this.#isReadOnly; }
     set isReadOnly(value) { this.#isReadOnly = value; this.#notifyReadonly(); }
 
+    get isModified() { return this.#modified; }
+    set isModified(value) { this.#modified = value; }
+
 } //class Table
