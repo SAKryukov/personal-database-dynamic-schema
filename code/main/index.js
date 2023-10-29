@@ -53,6 +53,14 @@ window.onload = () => {
         commandSet.table.isModified = false;
         modifiedIndicator.textContent = null;
     });
+    window.addEventListener("beforeunload", event => { // protect from losing unsaved data
+        const requiresConfirmation = commandSet.table.isModified;
+        if (requiresConfirmation) { // guarantee unload prompt for all browsers:
+            event.preventDefault(); // guarantees showing confirmation dialog
+            event.returnValue = true; // show confirmation dialog
+        } else // to guarantee unconditional unload
+            delete (event.returnValue);
+    }); // protect from losing unsaved data
 
     table.isReadOnly = false;
     if (commandLineParameter && typeof SAPersonalDatabase != typeof undefined) {

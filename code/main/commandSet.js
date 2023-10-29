@@ -3,6 +3,14 @@
 const createCommandSet = () => {
     
     const commandSet = new Map();
+    const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
+    const notifyStored = () => window.dispatchEvent(storedEvent);
+
+    commandSet.actConfirmed = function(action) {
+        let allow = true;
+        if (this.table.isModified) allow = confirm(definitionSet.eventHandler.dataModifiedRequest);
+        if (allow) action();
+    }; //commandSet.actConfirmed
 
     const showException = exception => {
         document.title = definitionSet.titleFormat();
@@ -17,12 +25,12 @@ const createCommandSet = () => {
 
     commandSet.set("new", new Command("New",
         () => true,
-        () => window.location.assign("")
+        () => commandSet.actConfirmed(() => document.location.assign(document.location.pathname)),
     ));
 
     commandSet.set("open", new Command("Open...",
-        () => true, //SA??? if not modified
-        () =>
+        () => true,
+        () => commandSet.actConfirmed(() => {
             fileIO.loadTextFile((_, text) => {
                 try {
                     const json = definitionSet.scripting.extractJson(text);
@@ -31,8 +39,10 @@ const createCommandSet = () => {
                     commandSet.summary.populate(data);
                     commandSet.table.isReadOnly = false;
                     showTitle(data);
+                    notifyStored();
                 } catch (ex) { showException(ex); }
-            }, definitionSet.fileIO.filePickerAcceptType())
+            }, definitionSet.fileIO.filePickerAcceptType());
+        })
     ));
 
     const implementSave = (alwaysDialog) => {
@@ -48,7 +58,7 @@ const createCommandSet = () => {
             fileIO.saveExisting(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerAcceptType());
         else
             fileIO.storeFile(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerAcceptType());
-    }; //
+    }; //implementSave
 
     commandSet.set("save", new Command("Save",
         () => commandSet.table.canStore,

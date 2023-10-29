@@ -9,6 +9,7 @@ const definitionSet = {
     titleFormat: function(value) { return value ? `${value} — ${this.product}` : `${this.product}` },
 
     eventHandler: {
+        dataModifiedRequest: "Data is modified.\nDo you want to continue?",
         readOnlyEvent: "readonly",
         modifiedEvent: "modified",
         storedEvent: "stored",

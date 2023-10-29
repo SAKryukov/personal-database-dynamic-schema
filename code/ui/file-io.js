@@ -20,7 +20,7 @@ const fileIO = (() => {
             ? fileName
             : this.previouslyOpenedFilename;
         link.click();
-        notifyStored();
+        notifyStored(); //can be false-positive, because it is not known if download was successful or not
     }; //storeFileFallback
 
     const saveExistingFallback = (fileName, content) => {
