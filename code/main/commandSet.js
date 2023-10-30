@@ -173,10 +173,12 @@ const createCommandSet = () => {
     commandSet.set("remember query string", new Command(null,
         () => true,
         () => {
-            let result = (new URLSearchParams(window.location.search));
-            result = decodeURIComponent(result);
-            result = definitionSet.stringCleanup.fixURI(result);
-            navigator.clipboard.writeText(result);
+            const parameters  = (new URLSearchParams(window.location.search));
+            for (const [key, _] of parameters) {
+                const result = key; 
+                navigator.clipboard.writeText(result);
+                break;
+            }
         },
     ));    
 

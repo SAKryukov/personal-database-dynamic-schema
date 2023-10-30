@@ -130,7 +130,6 @@ const definitionSet = {
         toHtml: value => value.trim().replace(/(\r\n|\n|\r)/gm, "<br>"),
         toWorld: value => value.replace(/<br[\s]*\/*>/gm, "\n").trim(),
         fixAndTrim: function(value) { return this.toHtml(this.toWorld(value)).replaceAll("\"", "&quot;").replaceAll("`", "&grave;"); },
-        fixURI: value => value.endsWith("=") ? value.slice(0, -1) : value,
     },
 
     initialize: function() {
