@@ -170,6 +170,16 @@ const createCommandSet = () => {
         () => commandSet.table.shuffleColumn(false)
     ));    
 
+    commandSet.set("remember query string", new Command(null,
+        () => true,
+        () => {
+            let result = (new URLSearchParams(window.location.search));
+            result = decodeURIComponent(result);
+            result = definitionSet.stringCleanup.fixURI(result);
+            navigator.clipboard.writeText(result);
+        },
+    ));    
+
     return commandSet;
 
 };
