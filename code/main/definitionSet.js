@@ -3,7 +3,7 @@
 const definitionSet = {
 
     product: "Personal Database",
-    version: "1.0",
+    version: "2.0",
 
     productFormat: function() { return `${this.product} v.&thinsp;${this.version}`; },
     titleFormat: function(value) { return value ? `${value} — ${this.product}` : `${this.product}` },
