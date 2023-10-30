@@ -6,8 +6,6 @@ class Table {
     #body = null;
     #fromData = null;
     #addRow = null;
-    #notifyReadonly = null;
-    #notifyModified = null;
     #selectedCell = null;
     #editingCell = null;
     #savedCellData = null;
@@ -16,6 +14,8 @@ class Table {
     #indexInSearchResults = -1;
     #readOnlyEvent = new CustomEvent(definitionSet.eventHandler.readOnlyEvent);
     #modifiedEvent = new CustomEvent(definitionSet.eventHandler.modifiedEvent);
+    #notifyReadonly = null;
+    #notifyModified = null;
     #modified = false;
 
     constructor(parent, contextMenu) {
@@ -432,6 +432,7 @@ class Table {
     } //populate
     reset() {
         this.load(definitionSet.table.initialData);
+        this.isReadOnly = false;
     } //reset
 
     get canStore() { return !this.#isReadOnly; }
