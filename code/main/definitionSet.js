@@ -9,9 +9,14 @@ const definitionSet = {
     titleFormat: function(value) { return value ? `${value} — ${this.product}` : `${this.product}` },
 
     eventHandler: {
-        dataModifiedRequest: "Data is modified.<br/>Do you want to continue?",
+        dataModifiedRequest: "Data is <i><b>modified</b></i>.<br/>Do you want to continue?",
         dataModifiedRequestButtonConfirm: "Proceed",
         dataModifiedRequestButtonCancel: "Cancel",
+        dataModifiedRequestStyles: { //SA??? exception in modalPopup.show
+            dimmerOpacity: 0.5,
+            dimmerColor: "#332234",
+            backgroundColor: { message: "cornsilk", buttonPad: "maroon", button: "aliceblue" },
+        },
         readOnlyEvent: "readonly",
         modifiedEvent: "modified",
         storedEvent: "stored",
