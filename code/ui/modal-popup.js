@@ -54,17 +54,19 @@ const modalPopup = {
 
 		    const hide = (object) => { object.style.visibility = "hidden"; }
 			const show = (object) => { object.style.visibility = null; }
-			const populateWithDefault = (value, defaultValue) => {
-				if (!defaultValue) return;
-				if (!value) return;
-				if (defaultValue.constructor == Object && value.constructor == Object) {
-					for (let index in defaultValue)
-						if (!(index in value))
-							value[index] = defaultValue[index];
+			const specialize = (defaultValue, value) => {
+				if (value == null) return defaultValue;
+				const newValue = {};
+				for (let index in defaultValue) {
+					if (value[index] != null) {
+						if (defaultValue[index] != null && value[index].constructor == defaultValue[index].constructor == Object)
+							newValue[index] = specialize(defaultValue[index], value[index]);
 						else
-							populateWithDefault(value[index], defaultValue[index]);
-				} else
-					value = defaultValue;
+							newValue[index] = value[index];
+					} else
+						newValue[index] = defaultValue[index];
+				} //loop
+				return newValue;
 			} //populateWithDefault
 
 			this.instance = new function() {
@@ -200,20 +202,17 @@ const modalPopup = {
 					messageWindow.innerHTML = null;
 				} //modalClosed
 
-				this.show = function(content, buttonDescriptors, styles, endModalStateHandler) {
+				this.show = function(content, buttonDescriptors, userStyles, endModalStateHandler) {
 					if (modalPopupIsShowing) return;
 					this.messageWindow.onkeydown = null;
-					if (!styles)
-						styles = defaultStyleSet;
-					else
-						populateWithDefault(styles, defaultStyleSet);
-					allowDragging = styles.allowDragging;
+					const effectiveStyles = specialize(defaultStyleSet, userStyles);
+					allowDragging = effectiveStyles.allowDragging;
 					if (allowDragging) {
 						window.addEventListener("mouseup", windowMouseUpHandler);
 						window.addEventListener("mousemove", windowMouseMoveHandler);
 					} //if allowDragging
-					this.dimmer.style.cssText = styleTemplates.dimmer.format(styles.dimmerOpacity, styles.dimmerColor);
-					this.messageWindow.style.cssText = styleTemplates.messageWindow.format(styles.textLineColor.message, styles.backgroundColor.message, styles.borderRadius.window, styles.width);
+					this.dimmer.style.cssText = styleTemplates.dimmer.format(effectiveStyles.dimmerOpacity, effectiveStyles.dimmerColor);
+					this.messageWindow.style.cssText = styleTemplates.messageWindow.format(effectiveStyles.textLineColor.message, effectiveStyles.backgroundColor.message, effectiveStyles.borderRadius.window, effectiveStyles.width);
 					let focusedElement = document.activeElement;
 					const list = [];
 					disableAll(list, this.messageWindow, document.body);
@@ -229,10 +228,10 @@ const modalPopup = {
 					} //insertUnderscore
 					const buttonPad = document.createElement("div");
 					const textPad = document.createElement("div");
-					buttonPad.style.cssText = styleTemplates.buttonPad.format(styles.padding.buttonPad[0], styles.padding.buttonPad[1], styles.borderRadius.window, styles.textLineColor.horizontalLine, styles.horizontalLineThickness, styles.backgroundColor.buttonPad);
-					textPad.style.cssText = styleTemplates.textPad.format(styles.padding.textPad[0], styles.padding.textPad[1]);
-					if (styles.textAlign)
-						textPad.style.textAlign = styles.textAlign; 
+					buttonPad.style.cssText = styleTemplates.buttonPad.format(effectiveStyles.padding.buttonPad[0], effectiveStyles.padding.buttonPad[1], effectiveStyles.borderRadius.window, effectiveStyles.textLineColor.horizontalLine, effectiveStyles.horizontalLineThickness, effectiveStyles.backgroundColor.buttonPad);
+					textPad.style.cssText = styleTemplates.textPad.format(effectiveStyles.padding.textPad[0], effectiveStyles.padding.textPad[1]);
+					if (effectiveStyles.textAlign)
+						textPad.style.textAlign = effectiveStyles.textAlign; 
 					textPad.innerHTML = content;
 					if (!buttonDescriptors || !("length" in buttonDescriptors) || buttonDescriptors.length < 1) buttonDescriptors = defaultButtonDescriptor;
 					this.messageWindow.buttonSet = [];
@@ -247,7 +246,7 @@ const modalPopup = {
 							accessIndex = 0;
 						closeButton.innerHTML = insertUnderscore(buttonDescriptors[buttonIndex].text, accessIndex);
 						closeButton.setAttribute("accesskey", buttonDescriptors[buttonIndex].text[accessIndex]);
-						closeButton.style.cssText = styleTemplates.button.format(styles.padding.button[0], styles.padding.button[1], styles.borderRadius.button, styles.backgroundColor.button, styles.textLineColor.button);
+						closeButton.style.cssText = styleTemplates.button.format(effectiveStyles.padding.button[0], effectiveStyles.padding.button[1], effectiveStyles.borderRadius.button, effectiveStyles.backgroundColor.button, effectiveStyles.textLineColor.button);
 						closeButton.messageWindow = this.messageWindow;
 						closeButton.onclick = function(ev) {
 							modalClosing(this.modalPopupControl, list);
@@ -256,7 +255,7 @@ const modalPopup = {
 							return false;
 						} //closeButton.onclick
 						buttonPad.appendChild(closeButton);
-						const margin = styles.padding.buttonSpacing;
+						const margin = effectiveStyles.padding.buttonSpacing;
 						if (buttonIndex < buttonDescriptors.length - 1)
 							closeButton.style.marginRight = margin;
 						else
@@ -280,10 +279,10 @@ const modalPopup = {
 							return false;
 						} //this.messageWindow.onkeydown
 					buttonPad.style.whiteSpace = "nowrap";
-					if (!styles.width) textPad.style.whiteSpace = "nowrap";
+					if (!effectiveStyles.width) textPad.style.whiteSpace = "nowrap";
 					this.messageWindow.appendChild(textPad);
 					this.messageWindow.appendChild(buttonPad);
-					if (styles.equalizeButtonWidths) {
+					if (effectiveStyles.equalizeButtonWidths) {
 						let max = 0;
 						for (let index = 0; index < this.messageWindow.buttonSet.length; ++index)
 							if (this.messageWindow.buttonSet[index].offsetWidth > max)
@@ -291,7 +290,7 @@ const modalPopup = {
 						for (let index = 0; index < this.messageWindow.buttonSet.length; ++index)
 							this.messageWindow.buttonSet[index].style.width = max;
 					} //if style.equalizeButtonWidths
-					if (!styles.width) {
+					if (!effectiveStyles.width) {
 						let max = textPad.offsetWidth;
 						if (buttonPad.offsetWidth > max) max = buttonPad.offsetWidth;
 						this.messageWindow.style.width = constants.formatSizeProperty(max);

@@ -6,15 +6,12 @@ const createCommandSet = () => {
     const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
     const notifyStored = () => window.dispatchEvent(storedEvent);
             
-    // definitionSet is frozen, but modalPopup.show tries to modify styles, hence this workaround:
-    const styles = window.structuredClone(definitionSet.eventHandler.dataModifiedRequestStyles);
-
     commandSet.actConfirmed = function(action) {
         if (this.table.isModified) {
             modalPopup.show(definitionSet.eventHandler.dataModifiedRequest, [
                 { text: definitionSet.eventHandler.dataModifiedRequestButtonConfirm, action: action },
                 { escape: true, text: definitionSet.eventHandler.dataModifiedRequestButtonCancel }
-            ], styles);
+            ], definitionSet.eventHandler.dataModifiedRequestStyles);
         } else
             action();
     }; //commandSet.actConfirmed
