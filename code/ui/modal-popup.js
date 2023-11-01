@@ -35,8 +35,12 @@ const modalPopup = {
 				equalizeButtonWidths: false,
 				backgroundColor: { message: "white", buttonPad: "silver", button: "" },
 				textLineColor: { message: "black", button: "", horizontalLine: "black" },
-				padding: { textPad: ["1em", "0.6em"], buttonPad: ["0.4em", "0.4em"], button: ["1em", "0.4em"], buttonSpacing: "1.6em" },
-				borderRadius: { window: "9px", button: "" }
+				padding: {
+					textPad: { horizontal: "1em", vertical: "0.6em" },
+					buttonPad: { horizontal: "0.4em", vertical: "0.4em" },
+					button: { horizontal: "2em", vertical: "0.4em" },
+					buttonSpacing: "1.6em" },
+				borderRadius: { window: "9px", button: "4px" }
 			} //defaultStyleSet
 
 			if (!String.prototype.format) {
@@ -53,20 +57,6 @@ const modalPopup = {
 
 		    const hide = (object) => { object.style.visibility = "hidden"; }
 			const show = (object) => { object.style.visibility = null; }
-			const specialize = (defaultValue, value) => {
-				if (value == null) return defaultValue;
-				const newValue = {};
-				for (let index in defaultValue) {
-					if (value[index] != null) {
-						if (defaultValue[index] != null && value[index].constructor == defaultValue[index].constructor == Object)
-							newValue[index] = specialize(defaultValue[index], value[index]);
-						else
-							newValue[index] = value[index];
-					} else
-						newValue[index] = defaultValue[index];
-				} //loop
-				return newValue;
-			} //specialize
 
 			this.instance = new function() {
 
@@ -75,7 +65,7 @@ const modalPopup = {
 					dimmer: "position: absolute; margin: 0; padding: 0; top:0; right:0; left:0; bottom:0; opacity: {0}; background-color: {1}",
 					buttonPad: "margin: 0; padding-left: {0}; padding-right: {0}; padding-top: {1}; padding-bottom: {1}; text-align: center; border-bottom-left-radius: {2}; border-bottom-right-radius: {2}; border-top: solid {3} {4}; background-color: {5}",
 					textPad: "margin: 0; padding-left: {0}; padding-right: {0}; padding-top: {1}; padding-bottom: {1};" +
-						"-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none",
+						"-webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none",
 					button: "bottom: 0.4; padding-left: {0}; padding-right: {0}; padding-top: {1}; padding-bottom: {1}; text-align:center; border-radius: {2}; background-color: {3}; color: {4}"
 				} //styleTemplates
 
@@ -204,7 +194,7 @@ const modalPopup = {
 				this.show = function(content, buttonDescriptors, userStyles, endModalStateHandler) {
 					if (modalPopupIsShowing) return;
 					this.messageWindow.onkeydown = null;
-					const effectiveStyles = specialize(defaultStyleSet, userStyles);
+					const effectiveStyles = Object.assign(defaultStyleSet, userStyles);
 					allowDragging = effectiveStyles.allowDragging;
 					if (allowDragging) {
 						window.addEventListener("mouseup", windowMouseUpHandler);
@@ -227,8 +217,8 @@ const modalPopup = {
 					} //insertUnderscore
 					const buttonPad = document.createElement("div");
 					const textPad = document.createElement("div");
-					buttonPad.style.cssText = styleTemplates.buttonPad.format(effectiveStyles.padding.buttonPad[0], effectiveStyles.padding.buttonPad[1], effectiveStyles.borderRadius.window, effectiveStyles.textLineColor.horizontalLine, effectiveStyles.horizontalLineThickness, effectiveStyles.backgroundColor.buttonPad);
-					textPad.style.cssText = styleTemplates.textPad.format(effectiveStyles.padding.textPad[0], effectiveStyles.padding.textPad[1]);
+					buttonPad.style.cssText = styleTemplates.buttonPad.format(effectiveStyles.padding.buttonPad.horizontal, effectiveStyles.padding.buttonPad.vertical, effectiveStyles.borderRadius.window, effectiveStyles.textLineColor.horizontalLine, effectiveStyles.horizontalLineThickness, effectiveStyles.backgroundColor.buttonPad);
+					textPad.style.cssText = styleTemplates.textPad.format(effectiveStyles.padding.textPad.horizontal, effectiveStyles.padding.textPad.vertical);
 					if (effectiveStyles.textAlign)
 						textPad.style.textAlign = effectiveStyles.textAlign; 
 					textPad.innerHTML = content;
@@ -245,7 +235,7 @@ const modalPopup = {
 							accessIndex = 0;
 						closeButton.innerHTML = insertUnderscore(buttonDescriptors[buttonIndex].text, accessIndex);
 						closeButton.setAttribute("accesskey", buttonDescriptors[buttonIndex].text[accessIndex]);
-						closeButton.style.cssText = styleTemplates.button.format(effectiveStyles.padding.button[0], effectiveStyles.padding.button[1], effectiveStyles.borderRadius.button, effectiveStyles.backgroundColor.button, effectiveStyles.textLineColor.button);
+						closeButton.style.cssText = styleTemplates.button.format(effectiveStyles.padding.button.horizontal, effectiveStyles.padding.button.vertical, effectiveStyles.borderRadius.button, effectiveStyles.backgroundColor.button, effectiveStyles.textLineColor.button);
 						closeButton.messageWindow = this.messageWindow;
 						closeButton.onclick = function(ev) {
 							modalClosing(this.modalPopupControl, list);
