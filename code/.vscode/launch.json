@@ -4,16 +4,15 @@
         {
             "name": "Live",
             "request": "launch",
-            "type": "pwa-chrome",
+            "type": "chrome",
             "url": "http://localhost:8080?/sa/doc/personalDB/contacts.sadb",
             "webRoot": "${workspaceFolder}"
         },
         {
             "name": "Main",
-            "type": "pwa-chrome",
+            "type": "chrome",
             "request": "launch",
-            //"file": "index.html",
-            "file": "index.html?/sa/doc/personalDB/contacts.sadb",
+            "file": "index.html",
         }
     ]
 }

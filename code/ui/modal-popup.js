@@ -269,7 +269,7 @@ const modalPopup = {
 						this.messageWindow.buttonSet.push(closeButton);
 					} //loop
 					if (escapeButton)
-						this.messageWindow.onkeydown = function(ev) {
+						escapeButton.onkeydown = function(ev) {
 							if (ev.ctrlKey || ev.shiftKey || ev.altKey || ev.metaKey) return true;
 							if (ev.keyCode != constants.escape) return true;
 							modalClosing(this.modalPopupControl, list);
@@ -278,6 +278,7 @@ const modalPopup = {
 							modalClosed(focusedElement, this);
 							return false;
 						} //this.messageWindow.onkeydown
+					//if
 					buttonPad.style.whiteSpace = "nowrap";
 					if (!effectiveStyles.width) textPad.style.whiteSpace = "nowrap";
 					this.messageWindow.appendChild(textPad);
@@ -301,7 +302,7 @@ const modalPopup = {
 					if (!defaultButton)
 						defaultButton = lastButton;
 					if (defaultButton)
-						defaultButton.focus();
+						setTimeout(() => { defaultButton.focus()});
 					if (!window.hasEventListenerModalClose) {	
 						window.addEventListener("beforeunload", function(event) {
 							modalClosing(this.modalPopupControl, list);
@@ -311,7 +312,6 @@ const modalPopup = {
 					} //if
 					window.addEventListener("resize", windowResizeHandler);
 				} //this.show
-
 			} //function
 		} //if this instance was not yet defined
 
