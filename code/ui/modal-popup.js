@@ -57,6 +57,20 @@ const modalPopup = {
 
 		    const hide = (object) => { object.style.visibility = "hidden"; }
 			const show = (object) => { object.style.visibility = null; }
+			const specialize = (defaultValue, value) => {
+				if (value == null) return defaultValue;
+				const newValue = {};
+				for (let index in defaultValue) {
+					if (value[index] != null) {
+						if (defaultValue[index] != null && value[index].constructor == Object && defaultValue[index].constructor == Object)
+							newValue[index] = specialize(defaultValue[index], value[index]);
+						else
+							newValue[index] = value[index];
+					} else
+						newValue[index] = defaultValue[index];
+				} //loop
+				return newValue;
+			} //specialize
 
 			this.instance = new function() {
 
@@ -194,7 +208,7 @@ const modalPopup = {
 				this.show = function(content, buttonDescriptors, userStyles, endModalStateHandler) {
 					if (modalPopupIsShowing) return;
 					this.messageWindow.onkeydown = null;
-					const effectiveStyles = Object.assign(defaultStyleSet, userStyles);
+					const effectiveStyles = specialize(defaultStyleSet, userStyles);
 					allowDragging = effectiveStyles.allowDragging;
 					if (allowDragging) {
 						window.addEventListener("mouseup", windowMouseUpHandler);
