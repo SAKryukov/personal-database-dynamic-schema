@@ -66,7 +66,7 @@ const modalPopup = {
 						newValue[index] = defaultValue[index];
 				} //loop
 				return newValue;
-			} //populateWithDefault
+			} //specialize
 
 			this.instance = new function() {
 
