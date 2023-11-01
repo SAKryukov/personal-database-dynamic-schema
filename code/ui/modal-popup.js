@@ -20,8 +20,7 @@ const modalPopup = {
 		if (!this.instance) {
 
 			const constants = {
-				escape: 27,
-				enter: 13,
+				escape: "Escape",
 				formatSizeProperty: (value) => { return value + "px"; }
 			}; //constants	
 
@@ -271,11 +270,9 @@ const modalPopup = {
 					if (escapeButton)
 						escapeButton.onkeydown = function(ev) {
 							if (ev.ctrlKey || ev.shiftKey || ev.altKey || ev.metaKey) return true;
-							if (ev.keyCode != constants.escape) return true;
-							modalClosing(this.modalPopupControl, list);
-							if (escapeButton.escapeAction, endModalStateHandler)
-								escapeButton.escapeAction();
-							modalClosed(focusedElement, this);
+							if (ev.key != constants.escape) return true;
+							ev.target.click();
+							ev.preventDefault();
 							return false;
 						} //this.messageWindow.onkeydown
 					//if
