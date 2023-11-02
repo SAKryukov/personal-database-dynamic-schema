@@ -2,9 +2,9 @@
 
 Modal Popup
 
-v.2.2
+v.3.0
 
-Copyright (c) 2015, 2017, 2019 by Sergey A Kryukov
+Copyright (c) 2015, 2017, 2019, 2023 by Sergey A Kryukov
 http://www.SAKryukov.org
 http://www.codeproject.com/Members/SAKryukov
 
@@ -21,7 +21,7 @@ const modalPopup = {
 
 			const constants = {
 				escape: "Escape",
-				formatSizeProperty: (value) => { return value + "px"; }
+				formatSizeProperty: value => value + "px",
 			}; //constants	
 
 			const defaultButtonDescriptor = [{ text: "Close", access: 0, action: null, escape: true }];
@@ -40,7 +40,7 @@ const modalPopup = {
 					buttonPad: { horizontal: "0.4em", vertical: "0.4em" },
 					button: { horizontal: "2em", vertical: "0.4em" },
 					buttonSpacing: "1.6em" },
-				borderRadius: { window: "9px", button: "4px" }
+				borderRadius: { window: "9px", button: "" }
 			} //defaultStyleSet
 
 			if (!String.prototype.format) {
@@ -55,14 +55,14 @@ const modalPopup = {
 				});
 			} //if !String.prototype.format
 
-		    const hide = (object) => { object.style.visibility = "hidden"; }
-			const show = (object) => { object.style.visibility = null; }
+		    const hide = object => { object.style.visibility = "hidden"; }
+			const show = object => { object.style.visibility = null; }
 			const specialize = (defaultValue, value) => {
 				if (value == null) return defaultValue;
 				const newValue = {};
 				for (let index in defaultValue) {
 					if (value[index] != null) {
-						if (defaultValue[index] != null && value[index].constructor == Object && defaultValue[index].constructor == Object)
+						if (value[index].constructor == Object && defaultValue[index].constructor == Object)
 							newValue[index] = specialize(defaultValue[index], value[index]);
 						else
 							newValue[index] = value[index];
@@ -79,7 +79,7 @@ const modalPopup = {
 					dimmer: "position: absolute; margin: 0; padding: 0; top:0; right:0; left:0; bottom:0; opacity: {0}; background-color: {1}",
 					buttonPad: "margin: 0; padding-left: {0}; padding-right: {0}; padding-top: {1}; padding-bottom: {1}; text-align: center; border-bottom-left-radius: {2}; border-bottom-right-radius: {2}; border-top: solid {3} {4}; background-color: {5}",
 					textPad: "margin: 0; padding-left: {0}; padding-right: {0}; padding-top: {1}; padding-bottom: {1};" +
-						"-webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none",
+						"-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none",
 					button: "bottom: 0.4; padding-left: {0}; padding-right: {0}; padding-top: {1}; padding-bottom: {1}; text-align:center; border-radius: {2}; background-color: {3}; color: {4}"
 				} //styleTemplates
 
@@ -107,7 +107,7 @@ const modalPopup = {
 					this.messageWindow.style.left = constants.formatSizeProperty(currentLocation.x);
 				} //this.resizeHandler
 
-				const windowResizeHandler = (ev) => {
+				const windowResizeHandler = () => {
 					this.modalPopupControl.resizeHandler();
 				} //windowResizeHandler
 
@@ -119,7 +119,7 @@ const modalPopup = {
 						for (let index = 0; index < element.buttonSet.length; ++index)
 							element.buttonSet[index].style.cursor = "move";
 				} //startDragging
-				const stopDragging = (element, ev) => {
+				const stopDragging = element => {
 					element.style.cursor = "default";
 					if (element.buttonSet)
 						for (let index = 0; index < element.buttonSet.length; ++index)
@@ -127,18 +127,18 @@ const modalPopup = {
 					draggingInfo = null;
 				} //stopDragging
 
-				this.dimmer.onmousedown = (ev) => {
+				this.dimmer.onmousedown = ev => {
 					ev.preventDefault();
 					return false;
 				} //this.dimmer.onmousedown
-				this.messageWindow.onmousedown = (ev) => {
+				this.messageWindow.onmousedown = ev => {
 					if (!modalPopupIsShowing) return;
 					ev = ev || window.event;
 					if (ev.button != 0) return;
 					startDragging(ev.target, ev);
 				}; //this.messageWindow.onmousedown
 				window.modalPopupControl = this;
-				const windowMouseUpHandler = (ev) => {
+				const windowMouseUpHandler = ev => {
 					if (!modalPopupIsShowing) return;
 					if (ev.button != 0) return;
 					ev = ev || window.event;
@@ -201,14 +201,20 @@ const modalPopup = {
 				const modalClosed = (focusedElement, messageWindow, endModalStateHandler) => {
 					if (endModalStateHandler && endModalStateHandler.constructor == Function)
 						endModalStateHandler();
-					if (focusedElement) focusedElement.focus();
+					if (focusedElement)
+                                                                                                        setTimeout(() => defaultButton.focus());
 					messageWindow.innerHTML = null;
 				} //modalClosed
 
 				this.show = function(content, buttonDescriptors, userStyles, endModalStateHandler) {
 					if (modalPopupIsShowing) return;
 					this.messageWindow.onkeydown = null;
-					const effectiveStyles = specialize(defaultStyleSet, userStyles);
+					let effectiveStyles;
+					if (!userStyles)
+						effectiveStyles = defaultStyleSet;
+					else
+						effectiveStyles = specialize(defaultStyleSet, userStyles);
+					if (effectiveStyles.width === Infinity) effectiveStyles.width = null;
 					allowDragging = effectiveStyles.allowDragging;
 					if (allowDragging) {
 						window.addEventListener("mouseup", windowMouseUpHandler);
@@ -249,7 +255,7 @@ const modalPopup = {
 							accessIndex = 0;
 						closeButton.innerHTML = insertUnderscore(buttonDescriptors[buttonIndex].text, accessIndex);
 						closeButton.setAttribute("accesskey", buttonDescriptors[buttonIndex].text[accessIndex]);
-						closeButton.style.cssText = styleTemplates.button.format(effectiveStyles.padding.button.horizontal, effectiveStyles.padding.button.vertical, effectiveStyles.borderRadius.button, effectiveStyles.backgroundColor.button, effectiveStyles.textLineColor.button);
+						closeButton.style.cssText = styleTemplates.button.format(effectiveStyles.padding.button.horizontal, effectiveStyles.padding.vertical, effectiveStyles.borderRadius.button, effectiveStyles.backgroundColor.button, effectiveStyles.textLineColor.button);
 						closeButton.messageWindow = this.messageWindow;
 						closeButton.onclick = function(ev) {
 							modalClosing(this.modalPopupControl, list);
@@ -272,14 +278,15 @@ const modalPopup = {
 						this.messageWindow.buttonSet.push(closeButton);
 					} //loop
 					if (escapeButton)
-						escapeButton.onkeydown = function(ev) {
+						this.messageWindow.onkeydown = function(ev) {
 							if (ev.ctrlKey || ev.shiftKey || ev.altKey || ev.metaKey) return true;
 							if (ev.key != constants.escape) return true;
-							ev.target.click();
-							ev.preventDefault();
+							modalClosing(this.modalPopupControl, list);
+							if (escapeButton.escapeAction, endModalStateHandler)
+								escapeButton.escapeAction();
+							modalClosed(focusedElement, this);
 							return false;
 						} //this.messageWindow.onkeydown
-					//if
 					buttonPad.style.whiteSpace = "nowrap";
 					if (!effectiveStyles.width) textPad.style.whiteSpace = "nowrap";
 					this.messageWindow.appendChild(textPad);
@@ -303,7 +310,7 @@ const modalPopup = {
 					if (!defaultButton)
 						defaultButton = lastButton;
 					if (defaultButton)
-						setTimeout(() => { defaultButton.focus()});
+						setTimeout(() => defaultButton.focus());
 					if (!window.hasEventListenerModalClose) {	
 						window.addEventListener("beforeunload", function(event) {
 							modalClosing(this.modalPopupControl, list);
@@ -313,6 +320,7 @@ const modalPopup = {
 					} //if
 					window.addEventListener("resize", windowResizeHandler);
 				} //this.show
+
 			} //function
 		} //if this instance was not yet defined
 
@@ -326,7 +334,7 @@ const modalPopup = {
 		element.parentNode.removeChild(element);
 		return content;
 	}, //prepareContent
-	prepareContentById: (id) => {
+	prepareContentById: id => {
 		return modalPopup.prepareContent(document.getElementById(id));
 	} //prepareContentById
 
