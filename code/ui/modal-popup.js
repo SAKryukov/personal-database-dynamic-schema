@@ -16,35 +16,12 @@ Published: http://www.codeproject.com/Articles/1061121/ModalPopupFromScratch
 const modalPopup = {
 
     version: "3.0",
+    date: 2023,
 
     show: function(content, buttonDescriptors, styles, onEndModalState) {
 
         if (!this.instance) {
 
-        const styleTemplates = {
-            messageWindow: (color, backgroundColor, borderRadius, width) =>
-                `position: absolute; padding:0; margin:0; color: ${color};
-                background-color: ${backgroundColor}; border-radius: ${borderRadius}; width: ${width}`,
-            dimmer: (opacity, color) =>
-                `position: absolute; margin: 0; padding: 0; top:0; right:0; left:0; bottom:0;
-                opacity: ${opacity}; background-color: ${color}`,
-            buttonPad: (paddingHorizontal, paddingVertical, borderRadius, horizontalLineThickness, borderColor, backgroundColor) =>
-                `overflow: auto; text-align: center; margin: 0;
-                padding-left: ${paddingHorizontal}; padding-right: ${paddingHorizontal};
-                padding-top: ${paddingVertical}; padding-bottom: ${paddingVertical}; 
-                border-bottom-left-radius: ${borderRadius}; border-bottom-right-radius: ${borderRadius};
-                border-top: solid ${horizontalLineThickness} ${borderColor}; background-color: ${backgroundColor}`,
-            textPad: (paddingHorizontal, paddingVertical) =>
-                `margin: 0; padding-left: ${paddingHorizontal}; padding-right: ${paddingHorizontal};
-                padding-top: ${paddingVertical}; padding-bottom: ${paddingVertical};
-                -webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none`,
-            button: (paddingHorizontal, paddingVertical, borderThickness, borderColor, borderRadius, color, backgroundColor) =>
-                `padding-left: ${paddingHorizontal}; padding-right: ${paddingHorizontal};
-                padding-top: ${paddingVertical}; padding-bottom: ${paddingVertical};
-                border: solid ${borderThickness} ${borderColor}; border-radius: ${borderRadius};
-                color: ${color}; background-color: ${backgroundColor}; 
-                text-align:center;`,
-        } //styleTemplates
         const constants = {
                 escape: "Escape",
                 formatSizeProperty: value => value + "px",
@@ -62,6 +39,7 @@ const modalPopup = {
                 },
                 allowDragging: true,
                 equalizeButtonWidths: false,
+                buttonFocusOutline: "solid 2.8px ghostWhite",
                 backgroundColor: { message: "floralWhite", buttonPad: "silver", button: "ghostWhite" },
                 textLineColor: { message: "black", button: "black", horizontalLine: "black", buttonBorder: "black" },
                 padding: {
@@ -69,8 +47,32 @@ const modalPopup = {
                     buttonPad: { horizontal: "0.4em", vertical: "0.4em" },
                     button: { horizontal: "2em", vertical: "0.4em" },
                     buttonSpacing: "1.6em" },
-                borderRadius: { window: "9px", button: "4px" }
+                borderRadius: { window: "9px", button: "4.1px" }
             } //defaultStyleSet
+            const styleTemplates = {
+                messageWindow: (color, backgroundColor, borderRadius, width) =>
+                    `position: absolute; padding:0; margin:0; color: ${color};
+                    background-color: ${backgroundColor}; border-radius: ${borderRadius}; width: ${width}`,
+                dimmer: (opacity, color) =>
+                    `position: absolute; margin: 0; padding: 0; top:0; right:0; left:0; bottom:0;
+                    opacity: ${opacity}; background-color: ${color}`,
+                buttonPad: (paddingHorizontal, paddingVertical, borderRadius, horizontalLineThickness, borderColor, backgroundColor) =>
+                    `overflow: auto; text-align: center; margin: 0;
+                    padding-left: ${paddingHorizontal}; padding-right: ${paddingHorizontal};
+                    padding-top: ${paddingVertical}; padding-bottom: ${paddingVertical}; 
+                    border-bottom-left-radius: ${borderRadius}; border-bottom-right-radius: ${borderRadius};
+                    border-top: solid ${horizontalLineThickness} ${borderColor}; background-color: ${backgroundColor}`,
+                textPad: (paddingHorizontal, paddingVertical) =>
+                    `margin: 0; padding-left: ${paddingHorizontal}; padding-right: ${paddingHorizontal};
+                    padding-top: ${paddingVertical}; padding-bottom: ${paddingVertical};
+                    -webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none`,
+                button: (paddingHorizontal, paddingVertical, borderThickness, borderColor, borderRadius, color, backgroundColor) =>
+                    `padding-left: ${paddingHorizontal}; padding-right: ${paddingHorizontal};
+                    padding-top: ${paddingVertical}; padding-bottom: ${paddingVertical};
+                    border: solid ${borderThickness} ${borderColor}; border-radius: ${borderRadius};
+                    color: ${color}; background-color: ${backgroundColor}; 
+                    text-align:center;`,
+            } //styleTemplates
             Object.freeze(constants);
             Object.freeze(defaultButtonDescriptor);
             Object.freeze(defaultStyleSet);
@@ -270,16 +272,22 @@ const modalPopup = {
                     this.messageWindow.buttonSet = [];
                     let lastButton, defaultButton, escapeButton;
                     for (let buttonIndex = 0; buttonIndex < buttonDescriptors.length; ++buttonIndex) {
-                        const closeButton = document.createElement("button");
-                        closeButton.modalPopupControl = this;
-                        closeButton.descriptor = buttonDescriptors[buttonIndex];
+                        const button = document.createElement("button");
+                        button.onfocus = event => {
+                            event.target.style.outline = effectiveStyles.buttonFocusOutline;
+                        } //closeButton.onfocus
+                        button.onblur = event => {
+                            event.target.style.outline = null;
+                        } //closeButton.onfocus
+                        button.modalPopupControl = this;
+                        button.descriptor = buttonDescriptors[buttonIndex];
                         let accessIndex = buttonDescriptors[buttonIndex].access;
                         if (!accessIndex) accessIndex = 0;
                         if (accessIndex > buttonDescriptors[buttonIndex].text.length - 1)
                             accessIndex = 0;
-                        closeButton.innerHTML = insertUnderscore(buttonDescriptors[buttonIndex].text, accessIndex);
-                        closeButton.setAttribute("accesskey", buttonDescriptors[buttonIndex].text[accessIndex]);
-                        closeButton.style.cssText = styleTemplates.button(
+                        button.innerHTML = insertUnderscore(buttonDescriptors[buttonIndex].text, accessIndex);
+                        button.setAttribute("accesskey", buttonDescriptors[buttonIndex].text[accessIndex]);
+                        button.style.cssText = styleTemplates.button(
                             effectiveStyles.padding.button.horizontal,
                             effectiveStyles.padding.button.vertical,
                             effectiveStyles.thickness.buttonBorder,
@@ -287,26 +295,26 @@ const modalPopup = {
                             effectiveStyles.borderRadius.button,
                             effectiveStyles.textLineColor.button,
                             effectiveStyles.backgroundColor.button);
-                        closeButton.messageWindow = this.messageWindow;
-                        closeButton.onclick = function(ev) {
+                        button.messageWindow = this.messageWindow;
+                        button.onclick = function(ev) {
                             modalClosing(this.modalPopupControl, list);
                             if (this.descriptor && this.descriptor.action) { this.descriptor.action(); }
                             modalClosed(focusedElement, this.messageWindow, endModalStateHandler);
                             return false;
                         } //closeButton.onclick
-                        buttonPad.appendChild(closeButton);
+                        buttonPad.appendChild(button);
                         const margin = effectiveStyles.padding.buttonSpacing;
                         if (buttonIndex < buttonDescriptors.length - 1)
-                            closeButton.style.marginRight = margin;
+                            button.style.marginRight = margin;
                         else
-                            lastButton = closeButton;
+                            lastButton = button;
                         if (!defaultButton && buttonDescriptors[buttonIndex].default)
-                            defaultButton = closeButton;
+                            defaultButton = button;
                         if (!escapeButton && buttonDescriptors[buttonIndex].escape) {
-                            escapeButton = closeButton;
+                            escapeButton = button;
                             escapeButton.escapeAction = buttonDescriptors[buttonIndex].action;
                         } //if
-                        this.messageWindow.buttonSet.push(closeButton);
+                        this.messageWindow.buttonSet.push(button);
                     } //loop
                     if (escapeButton)
                         this.messageWindow.onkeydown = function(ev) {
@@ -336,12 +344,12 @@ const modalPopup = {
                         this.messageWindow.style.width = constants.formatSizeProperty(max + 2); //SA???
                     } //if width by content
                     this.resizeHandler();
-                    show(this.messageWindow);
-                    show(this.dimmer);
                     if (!defaultButton)
                         defaultButton = lastButton;
+                    show(this.messageWindow);
+                    show(this.dimmer);
                     if (defaultButton)
-                        setTimeout(() => defaultButton.focus());
+                        setTimeout(() => defaultButton.focus() );
                     if (!window.hasEventListenerModalClose) {    
                         window.addEventListener("beforeunload", function() {
                             modalClosing(this.modalPopupControl, list);
