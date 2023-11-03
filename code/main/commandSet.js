@@ -8,10 +8,12 @@ const createCommandSet = () => {
             
     commandSet.actConfirmed = function(action) {
         if (this.table.isModified) {
-            modalPopup.show(definitionSet.eventHandler.dataModifiedRequest, [
-                { text: definitionSet.eventHandler.dataModifiedRequestButtonConfirm, action: action },
-                { escape: true, text: definitionSet.eventHandler.dataModifiedRequestButtonCancel }
-            ], definitionSet.eventHandler.dataModifiedRequestStyles);
+            setTimeout(() => { //SA???
+                modalPopup.show(definitionSet.eventHandler.dataModifiedRequest, [
+                    { text: definitionSet.eventHandler.dataModifiedRequestButtonConfirm, action: action },
+                    { escape: true, text: definitionSet.eventHandler.dataModifiedRequestButtonCancel }
+                ], definitionSet.eventHandler.dataModifiedRequestStyles);    
+            });
         } else
             action();
     }; //commandSet.actConfirmed

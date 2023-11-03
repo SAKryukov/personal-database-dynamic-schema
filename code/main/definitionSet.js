@@ -12,10 +12,18 @@ const definitionSet = {
         dataModifiedRequest: "Data is <i><b>modified</b></i>.<br/>Do you want to continue?",
         dataModifiedRequestButtonConfirm: "Proceed",
         dataModifiedRequestButtonCancel: "Cancel",
-        dataModifiedRequestStyles: { //SA??? exception in modalPopup.show
+        dataModifiedRequestStyles: {
+            width: null,
+            equalizeButtonWidths: true,
             dimmerOpacity: 0.5,
             dimmerColor: "#332234",
-            backgroundColor: { message: "cornsilk", buttonPad: "maroon", button: "aliceblue" },
+            backgroundColor: { message: "cornSilk", buttonPad: "maroon", button: "aliceBlue" },
+            padding: {
+                textPad: { horizontal: "2.4em", vertical: "1em" },
+                buttonSpacing: "2.4em",
+                buttonPad: { horizontal: "2.4em", vertical: "0.6em" },
+            },
+            buttonFocusOutline: "solid 2.8px cornSilk",
         },
         readOnlyEvent: "readonly",
         modifiedEvent: "modified",
@@ -136,7 +144,7 @@ const definitionSet = {
         const freezeObject = object => {
             for (let index in object) {
                 const property = object[index];
-                if (property.constructor == Object)
+                if (property && property.constructor == Object)
                     freezeObject(property);
             } //loop
             Object.freeze(object);

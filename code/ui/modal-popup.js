@@ -349,7 +349,7 @@ const modalPopup = {
                     show(this.messageWindow);
                     show(this.dimmer);
                     if (defaultButton)
-                        setTimeout(() => defaultButton.focus() );
+                        defaultButton.focus();
                     if (!window.hasEventListenerModalClose) {    
                         window.addEventListener("beforeunload", function() {
                             modalClosing(this.modalPopupControl, list);
