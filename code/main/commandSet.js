@@ -15,7 +15,7 @@ const createCommandSet = () => {
                     { escape: true, text: definitionSet.eventHandler.dataModifiedRequestButtonCancel }
                 ],
                 definitionSet.eventHandler.dataModifiedRequestStyles,
-                null, // no end modal state handler
+                null, // handler for the end of "modal" state
                 this.table // element to finally focus
             );
         } else
