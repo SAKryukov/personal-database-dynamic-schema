@@ -18,7 +18,7 @@ const modalPopup = {
     version: "3.0",
     date: 2023,
 
-    show: function(content, buttonDescriptors, styles, onEndModalState) {
+    show: function(content, buttonDescriptors, styles, onEndModalState, focusReturnElement) {
 
         if (!this.instance) {
 
@@ -213,15 +213,17 @@ const modalPopup = {
                     hide(itself.dimmer);
                     modalPopupIsShowing = false;
                 } //modalClosing
-                const modalClosed = (focusedElement, messageWindow, endModalStateHandler) => {
+                const modalClosed = async (focusedElement, messageWindow, endModalStateHandler) => {
                     if (endModalStateHandler && endModalStateHandler.constructor == Function)
                         endModalStateHandler();
-                    if (focusedElement) focusedElement.focus();
                     messageWindow.innerHTML = null;
+                    return new Promise(resolve => {
+                        resolve(focusedElement);
+                    });
                 } //modalClosed
 
-                this.show = function(content, buttonDescriptors, userStyles, endModalStateHandler) {
-                    if (modalPopupIsShowing) return;
+                this.show = async function(content, buttonDescriptors, userStyles, endModalStateHandler) {
+                    if (modalPopupIsShowing) return new Promise();
                     this.messageWindow.onkeydown = null;
                     let effectiveStyles;
                     if (!userStyles)
@@ -241,8 +243,8 @@ const modalPopup = {
                             effectiveStyles.textLineColor.message,
                             effectiveStyles.backgroundColor.message,
                             effectiveStyles.borderRadius.window,
-                            effectiveStyles.width);
-                    let focusedElement = document.activeElement;
+                            effectiveStyles.width);                    
+                    const focusedElement = focusReturnElement ?? document.activeElement;
                     const list = [];
                     blockResponsivenessAll(list, this.messageWindow, document.body);
                     const insertUnderscore = (text, underscoreIndex) => {
@@ -301,7 +303,9 @@ const modalPopup = {
                         button.onclick = function() {
                             modalClosing(this.modalPopupControl, list);
                             if (this.descriptor && this.descriptor.action) { this.descriptor.action(); }
-                            modalClosed(focusedElement, this.messageWindow, endModalStateHandler);
+                            modalClosed(focusedElement, this.messageWindow, endModalStateHandler).then(
+                                elementToFocus => elementToFocus?.focus()
+                            );
                             return false;
                         } //closeButton.onclick
                         buttonPad.appendChild(button);
@@ -323,9 +327,11 @@ const modalPopup = {
                             if (ev.ctrlKey || ev.shiftKey || ev.altKey || ev.metaKey) return true;
                             if (ev.key != constants.escape) return true;
                             modalClosing(this.modalPopupControl, list);
-                            if (escapeButton.escapeAction, endModalStateHandler)
+                            if (escapeButton.escapeAction)
                                 escapeButton.escapeAction();
-                            modalClosed(focusedElement, this);
+                            modalClosed(focusedElement, this).then(
+                                elementToFocus => elementToFocus?.focus()
+                            );
                             return false;
                         } //this.messageWindow.onkeydown
                     buttonPad.style.whiteSpace = "nowrap";
@@ -350,22 +356,26 @@ const modalPopup = {
                         defaultButton = lastButton;
                     show(this.messageWindow);
                     show(this.dimmer);
-                    if (defaultButton)
-                        defaultButton.focus();
                     if (!window.hasEventListenerModalClose) {    
                         window.addEventListener("beforeunload", function() {
                             modalClosing(this.modalPopupControl, list);
-                            modalClosed(null, this, null);
+                            modalClosed(null, this, null).then(
+                                elementToFocus => elementToFocus?.focus()
+                            );
                         });
                         window.hasEventListenerModalClose = this;
                     } //if
                     window.addEventListener("resize", windowResizeHandler);
+                    return new Promise(resolve => {
+                        resolve(defaultButton);
+                    });
                 } //this.show
-
             } //function
         } //if this instance was not yet defined
 
-        this.instance.show(content, buttonDescriptors, styles, onEndModalState);
+        this.instance.show(content, buttonDescriptors, styles, onEndModalState).then(
+            buttonToFocus => buttonToFocus?.focus()
+        );
 
     }, //show
     

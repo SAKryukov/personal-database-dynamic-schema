@@ -6,14 +6,18 @@ const createCommandSet = () => {
     const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
     const notifyStored = () => window.dispatchEvent(storedEvent);
             
-    commandSet.actConfirmed = function(action) {
+    commandSet.actConfirmed = function (action) {
         if (this.table.isModified) {
-            setTimeout(() => { //SA???
-                modalPopup.show(definitionSet.eventHandler.dataModifiedRequest, [
+            modalPopup.show(
+                definitionSet.eventHandler.dataModifiedRequest,
+                [
                     { text: definitionSet.eventHandler.dataModifiedRequestButtonConfirm, action: action },
                     { escape: true, text: definitionSet.eventHandler.dataModifiedRequestButtonCancel }
-                ], definitionSet.eventHandler.dataModifiedRequestStyles);    
-            });
+                ],
+                definitionSet.eventHandler.dataModifiedRequestStyles,
+                null, // no end modal state handler
+                this.table // element to finally focus
+            );
         } else
             action();
     }; //commandSet.actConfirmed
