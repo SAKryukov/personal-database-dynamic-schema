@@ -30,7 +30,7 @@ const modalPopup = {
                 [{ text: "Close", access: 0, action: null, escape: true }];
             const defaultStyleSet = {
                 textAlign: null,
-                width: "25em", // use null for width-to-content feature
+                width: null, // use null for auto width, but the content becomes .whiteSpace.nowrap, so use <br/>
                 dimmerOpacity: 0.7,
                 dimmerColor: "#040809",
                 thickness: {
@@ -43,9 +43,9 @@ const modalPopup = {
                 backgroundColor: { message: "floralWhite", buttonPad: "silver", button: "ghostWhite" },
                 textLineColor: { message: "black", button: "black", horizontalLine: "black", buttonBorder: "black" },
                 padding: {
-                    textPad: { horizontal: "1em", vertical: "0.6em" },
-                    buttonPad: { horizontal: "0.4em", vertical: "0.4em" },
-                    button: { horizontal: "2em", vertical: "0.4em" },
+                    textPad: { horizontal: "2em", vertical: "1.2em" },
+                    buttonPad: { horizontal: "2em", vertical: "0.4em" },
+                    button: { horizontal: "2em", vertical: "0.2em" },
                     buttonSpacing: "1.6em" },
                 borderRadius: { window: "9px", button: "4.1px" }
             } //defaultStyleSet
