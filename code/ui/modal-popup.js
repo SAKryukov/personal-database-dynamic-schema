@@ -184,29 +184,31 @@ const modalPopup = {
                     return false;
                 }; //windowMouseMoveHandler
 
-                const disableAll = (list, exclusion, parent) => {
+                const blockResponsivenessAll = (list, exclusion, parent) => {
                     modalPopupIsShowing = true;
                     if (parent == exclusion) return;
-                    const objectSample = {};
                     for (let index in parent.childNodes) {
                         let child = parent.childNodes[index];
-                        disableAll(list, exclusion, child);
-                        if (typeof child == typeof objectSample && "disabled" in child && !child.disabled) {
-                            child.disabled = true;
-                            list.push({ element: child, accessKey: child.accessKey });
+                        blockResponsivenessAll(list, exclusion, child);
+                        if (child.tabIndex != null && child.tabIndex >= 0) {
+                            list.push({ tabIndex: child.tabIndex, element: child, accessKey: child.accessKey });
+                            child.tabIndex = -1;
                             child.accessKey = undefined; // this is a workaround for Mozilla
                         } //if
                     } //loop
-                } //disableAll
+                } //blockResponsivenessAll
+                const unblockResponsivenessAll = list => {
+                    for (let index in list) {
+                        list[index].element.tabIndex = list[index].tabIndex;
+                        if (list[index].accessKey) // because of just Mozilla
+                            list[index].element.accessKey = list[index].accessKey;
+                    } //loop
+                } //unblockResponsivenessAll
                 const modalClosing = (itself, list) => {
                     window.removeEventListener("resize", windowResizeHandler)
                     window.removeEventListener("mousemove", windowMouseMoveHandler);
                     window.removeEventListener("mouseup", windowMouseUpHandler);
-                    for (let index in list) {
-                        list[index].element.disabled = false;
-                        if (list[index].accessKey) // because of just Mozilla
-                            list[index].element.accessKey = list[index].accessKey;
-                    } //loop
+                    unblockResponsivenessAll(list);
                     hide(itself.messageWindow);
                     hide(itself.dimmer);
                     modalPopupIsShowing = false;
@@ -242,7 +244,7 @@ const modalPopup = {
                             effectiveStyles.width);
                     let focusedElement = document.activeElement;
                     const list = [];
-                    disableAll(list, this.messageWindow, document.body);
+                    blockResponsivenessAll(list, this.messageWindow, document.body);
                     const insertUnderscore = (text, underscoreIndex) => {
                         let result = "";
                         const array = text.split("");
@@ -296,7 +298,7 @@ const modalPopup = {
                             effectiveStyles.textLineColor.button,
                             effectiveStyles.backgroundColor.button);
                         button.messageWindow = this.messageWindow;
-                        button.onclick = function(ev) {
+                        button.onclick = function() {
                             modalClosing(this.modalPopupControl, list);
                             if (this.descriptor && this.descriptor.action) { this.descriptor.action(); }
                             modalClosed(focusedElement, this.messageWindow, endModalStateHandler);
