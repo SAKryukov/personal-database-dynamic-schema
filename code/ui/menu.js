@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container) {
 
-    const version = "0.2.3";
+    const version = "0.2.4";
     if (!new.target) return version; this.version = version;
 
     if (!container) return;
