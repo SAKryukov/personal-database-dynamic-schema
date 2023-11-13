@@ -43,6 +43,7 @@ const definitionSet = {
         initialPropertyName: "Name",
         initialData: { properties: ["Name"], values: [], records: [[]]},
         initialValue: "",
+        editingHint: editing => editing ? "Ctrl+Enter: commit, Escape: cancel" : "",
     },
 
     display: {

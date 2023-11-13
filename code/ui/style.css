@@ -1,0 +1,74 @@
+:root {
+    --deltaX: 2em;
+    --margin-Y: 0.3em;
+    --padding: 0.3em 1em 0.3em 1em;
+    --padding-option: 0.12em 1.4em 0.12em 1.4em;
+    --padding-button: 1px 1.4em 1px 1.4em;
+    --padding-horizontal: 0.2em 1em 0.2em 1em;
+    --margin-X-small: 0.3em;
+}
+* { font-family: sans-serif; user-select: none; }
+#error { display: block; color:red; }
+select { display: none; }
+/* flex: */
+* { padding: 0; margin: 0; box-sizing: border-box; }
+html, body { height: 100%; }        
+body { display: flex; flex-flow: column; height: 100%; }
+main { flex: auto; overflow: auto; }
+/* end flex */
+header { border: none; }
+menu { border-bottom: 1px solid black; }
+th { position: sticky; top: 0; }
+th {  box-shadow: inset 1px 1px black, 0 1px black; }
+table, td, th { box-shadow: inset 1px -1px black; }
+table { border-right: solid 2px black; border-bottom: solid 2px black; outline: none; }
+table { border-collapse: collapse; }
+pre, td, th { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
+td { vertical-align: top; }
+th { background-color: lightgray; }
+td, th { white-space: nowrap; }
+textarea { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
+/* selection and focus: keep .select in sync with definitionSet.CSS: */
+table:not(:focus) td:not(.select) { background-color: hsl(0, 0%, 90%); }
+td:first-child, td:last-child { background-color: lightgray; text-align: right; }
+td.select { background-color: steelBlue; color: white; }
+td.found { outline: 6px solid orange; outline-offset: -3px; }
+td:focus, th:focus { background-color: white; color: navy; outline: none; }
+table:not(:focus) td:not(:focus).select { opacity: 50%; }
+/* footer */
+footer > * { display: inline-block; vertical-align: middle; }
+footer { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
+footer > details { display: inline-block; }
+#product {  vertical-align: middle; }
+footer details section { display: table; }
+footer details section p { display: table-row; }
+footer details section p b { display: table-cell; padding-left: 1em; font-weight: normal; padding-bottom: 0.2em; }
+footer details section p:first-child b { padding-top: 0.2em; }
+footer summary { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
+#read-only, #modified { padding-left: 1em; font-weight:bold; }
+#modified { color: red; }
+footer section { margin-left: 1em; }
+footer section input { padding-left: 1em; padding-right: 1em; }
+footer section button, footer section input { outline: none; border: solid thin gray; height: 2.2em; }
+footer section button { width: 2.2em; }
+footer section button:not(:last-of-type) { border-left-width: 0px; }
+footer button.up { background-color: white; }
+footer button.down  { background-color: lightgray; }
+footer { border-top: 1px solid gray; }
+/* menu */
+body > header { border-bottom: 1px solid gray; }
+header menu { border: none; outline: none; width: 100%; }
+header menu li { display: inline; }
+header menu header { padding: var(--padding); }
+header menu { display: flex; flex-direction: row; }
+header menu li:last-of-type { margin-left: auto; right: 4px; }
+header menu li:last-of-type select { right: 4px; }
+header menu header.selected { background-color: lightgrey; color: black; }
+select { overflow-y: auto; font-size: 100%; display: none; }
+header menu li:first-of-type select { left: 4px; }
+option, optgroup { padding: var(--padding-option); font-weight: normal; }
+optgroup { margin-left: 1em; }
+optgroup option { padding-left: 2em; }
+option:disabled { color: black; opacity: 0.3; }
+option.separator { padding: 0; opacity: 1; color: gray; }
+select { display: none; border: none; outline: 1.4px solid gray; }

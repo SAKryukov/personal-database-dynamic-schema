@@ -22,14 +22,34 @@ window.onload = () => {
     document.title = definitionSet.titleFormat();
 
     const commandSet = createCommandSet();
-    const contextMenu = new ContextMenu(document.querySelector("#context"), commandSet, "nav");
-    const errorElement = document.querySelector("#error");
-    contextMenu.onShown = () => {
+    //SA new!!!
+    const mainMenu = new menuGenerator(document.querySelector("header > menu"));
+    const contextMenu = new menuGenerator(document.querySelector("main select"));
+    mainMenu.subscribe(commandSet);
+    contextMenu.subscribe(commandSet);
+    contextMenu.onShown(() => {
         errorElement.style.display = definitionSet.display.hide;
         errorElement.style.textContent = null;
-    }; //contextMenu.onShown
+    }); //contextMenu.onShown
+    const errorElement = document.querySelector("#error");
 
-    const mainMenu = new MainMenu(document.querySelector("body > header"), commandSet, "> nav li", "article", "nav", "u");
+    (() => { //context menu activation:
+        let lastPointerX = 0;
+        let lastPointerY = 0;
+        window.onpointermove = event => {
+            lastPointerX = event.clientX;
+            lastPointerY = event.clientY;
+        }; //window.onpointermove
+        window.oncontextmenu = event => {
+            const isPointer = event.button >= 0;
+            if (isPointer)
+                contextMenu.activate(event.clientX, event.clientY);
+            else
+                contextMenu.activate(lastPointerX, lastPointerY);
+            event.preventDefault();
+        }; //window.oncontextmenu    
+    })(); //
+    
     const summary = new Summary(
         document.querySelector("#summary-title"),
         document.querySelector("#summary-created"),
@@ -38,7 +58,7 @@ window.onload = () => {
     );
     const readOnlyIndicator = document.querySelector("#read-only");
     const modifiedIndicator = document.querySelector("#modified");
-    const table = new Table(document.querySelector("main"), contextMenu);
+    const table = new Table(document.querySelector("main"));
     
     commandSet.table = table;
 
@@ -87,8 +107,6 @@ window.onload = () => {
     );
 
     window.onkeydown = event => {
-        if (mainMenu.windowKeyHandler(event))
-            return event.preventDefault();
         if (event.key == definitionSet.keyboard.findNext) {
             table.findNext();
             event.preventDefault();
