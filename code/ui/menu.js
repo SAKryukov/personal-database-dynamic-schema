@@ -382,6 +382,7 @@ function menuGenerator (container) {
 
     const select = (element, doSelect) => {
         if (!element) return;
+        element.style.zIndex = Number.MAX_SAFE_INTEGER;
         const eventData = elementMap.get(element);
         if (doSelect)
             eventData.header.classList.add(definitionSet.selectionIndicator);
