@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container) {
 
-    const version = "0.2.2";
+    const version = "0.2.3";
     if (!new.target) return version; this.version = version;
 
     if (!container) return;
@@ -391,8 +391,7 @@ function menuGenerator (container) {
             ? definitionSet.css.show : definitionSet.css.hide;
         if (!doSelect) return;
         if (eventData.optionSize < 2) ++eventData.optionSize; // SA??? weird bug workaround
-        eventData.select.size = eventData.select.options.length;
-        eventData.select.style.zIndex = Number.MAX_SAFE_INTEGER;
+        eventData.select.size = eventData.optionSize;
         if (doSelect)
             current = element;
         setTimeout(() => eventData.select.focus());
@@ -524,7 +523,7 @@ function menuGenerator (container) {
         const selectElement = container;
         const data = { menuItems: [], };
         const size = contextMenuPopulate(selectElement, data);
-        selectElement.size = selectElement.options.length;
+        selectElement.size = size;
     } else
         twoLevelMenuPopulate();
 
