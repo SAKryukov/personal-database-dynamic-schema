@@ -300,10 +300,10 @@ class Table {
         this.#notifyModified();
     } //insertProperty
 
-    canShuffleRow(up) {
+    canShuffleRow(up) {        
         if (this.#isReadOnly || this.#selectedCell == null)
             return false;
-        const rowIndex = this.#selectedCell.parentElement.rowIndex -1;
+        const rowIndex = this.#selectedCell.parentElement.rowIndex - 1;
             return up
             ? rowIndex > 0
             : rowIndex < this.#body.rows.length - 1;
@@ -355,7 +355,7 @@ class Table {
             this.#body.rows[rowIndex].deleteCell(cellIndex);
         if (cellIndex > this.#headerRow.cells.length - 2)
             cellIndex = this.#headerRow.cells.length - 2;
-        this.#select(this.#body.rows[rowIndex].cells[cellIndex]);
+        this.#select(this.#body.rows[rowIndex - 1].cells[cellIndex]);
         this.#notifyModified();
     } //removeProperty
 

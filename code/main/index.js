@@ -22,15 +22,26 @@ window.onload = () => {
     document.title = definitionSet.titleFormat();
 
     const commandSet = createCommandSet();
-    //SA new!!!
     const mainMenu = new menuGenerator(document.querySelector("header > menu"));
     const contextMenu = new menuGenerator(document.querySelector("main select"));
-    mainMenu.subscribe(commandSet);
-    contextMenu.subscribe(commandSet);
-    contextMenu.onShown(() => {
-        errorElement.style.display = definitionSet.display.hide;
-        errorElement.style.textContent = null;
-    }); //contextMenu.onShown
+    (() => { //menu:
+        mainMenu.options = { afterActionBehavior: { hide: true } };
+        mainMenu.subscribe(commandSet);
+        contextMenu.subscribe(commandSet);
+        contextMenu.onShown(() => {
+            errorElement.style.display = definitionSet.display.hide;
+            errorElement.style.textContent = null;
+        }); //contextMenu.onShown   
+        mainMenu.subscribe("About", actionRequest => {
+            if (!actionRequest) return;
+            window.open("https://SAKryukov.org", "_blank");            
+        });
+        mainMenu.subscribe("Source Code", actionRequest => {
+            if (!actionRequest) return;
+            window.open("https://www.github.com/SAKryukov/personal-database-dynamic-schema", "_blank");            
+        });
+    })(); //menu
+
     const errorElement = document.querySelector("#error");
 
     (() => { //context menu activation:

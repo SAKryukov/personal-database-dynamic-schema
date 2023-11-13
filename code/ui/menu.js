@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container) {
 
-    const version = "0.2.4";
+    const version = "0.2.5";
     if (!new.target) return version; this.version = version;
 
     if (!container) return;
@@ -234,12 +234,8 @@ function menuGenerator (container) {
                     } //loop
                     return newValue;
                 } //specialize
-                const toRemapKeyboardShortcuts =
-                    menuOptions.keyboardShortcuts.excludes !=
-                    customOptions.keyboardShortcuts.excludes
                 menuOptions = specialize(menuOptions, customOptions);
-                if (toRemapKeyboardShortcuts)
-                    remapKeyboardShortcuts();
+                remapKeyboardShortcuts();
             }, //set
             enumerable: true,
             configurable: true,
