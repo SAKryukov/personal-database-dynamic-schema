@@ -26,7 +26,6 @@ class TwoStateButton {
     set onChange(handler) {
         this.#onChange = handler;
     }
-    get element() { return this.#element; }
 
 } //class TwoStateButton
 

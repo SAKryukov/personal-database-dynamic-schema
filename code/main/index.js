@@ -18,6 +18,8 @@ const commandLineParameter = (commandLine => {
 
 window.onload = () => {
 
+    const elements = getElements();
+
     document.querySelector("#product").innerHTML = definitionSet.productFormat();
     document.title = definitionSet.titleFormat();
 
@@ -107,13 +109,7 @@ window.onload = () => {
 
     const main = document.querySelector("main");
     new Search(
-        document.querySelector("#search"),
-        main,
-        new TwoStateButton(document.querySelector("#search-match-case"), definitionSet.CSS.buttonUp, definitionSet.CSS.buttonDown, true),
-        new TwoStateButton(document.querySelector("#search-whole-word"), definitionSet.CSS.buttonUp, definitionSet.CSS.buttonDown, false),
-        new TwoStateButton(document.querySelector("#search-regexp"), definitionSet.CSS.buttonUp, definitionSet.CSS.buttonDown, false),
-        document.querySelector("#search-results"),
-        document.querySelector("#search-next"),
+        elements,
         (pattern, matchCase, wholeWord, isRegexp) => table.find(pattern, matchCase, wholeWord, isRegexp),
         () => table.hideFound(),
         () => table.findNext()

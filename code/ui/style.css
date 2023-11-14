@@ -21,7 +21,7 @@ menu { border-bottom: 1px solid black; }
 th { position: sticky; top: 0; }
 th {  box-shadow: inset 1px 1px black, 0 1px black; }
 table, td, th { box-shadow: inset 1px -1px black; }
-table { border-right: solid 2px black; border-bottom: solid 2px black; outline: none; }
+table { margin-left: -1px; border: none; border-right: solid 1px black; outline: none; }
 table { border-collapse: collapse; }
 pre, td, th { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
 td { vertical-align: top; }

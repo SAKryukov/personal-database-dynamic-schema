@@ -1,16 +1,24 @@
 class Search {
 
-    constructor(pattern, main, matchCase, wholeWord, regexp, indicator, findNextButton, findHandler, hideFoundHandler, findNextHandler) {
+    constructor(elements, findHandler, hideFoundHandler, findNextHandler) {
 
-        new Hint(main, pattern);
-        new Hint(main, matchCase.element);
-        new Hint(main, wholeWord.element);
-        new Hint(main, regexp.element);
-        new Hint(main, findNextButton);
+        const pattern = elements.search.searchPattern;
+
+        const matchCase = new TwoStateButton(elements.search.options.matchCase, definitionSet.CSS.buttonUp, definitionSet.CSS.buttonDown, true);
+        const wholeWord = new TwoStateButton(elements.search.options.wholeWord, definitionSet.CSS.buttonUp, definitionSet.CSS.buttonDown, false);
+        const useRegexp = new TwoStateButton(elements.search.options.useRegexp, definitionSet.CSS.buttonUp, definitionSet.CSS.buttonDown, false);
+        const searchResults = elements.search.searchResults;
+        const buttonNext = elements.search.buttonNext;
+
+        new Hint(elements.main, pattern);
+        new Hint(elements.main, elements.search.options.matchCase);
+        new Hint(elements.main, elements.search.options.wholeWord);
+        new Hint(elements.main, elements.search.options.useRegexp);
+        new Hint(elements.main, buttonNext);
 
         const hideFound = () => {
-            indicator.textContent = null;
-            findNextButton.style.display = definitionSet.CSS.display.none;
+            searchResults.textContent = null;
+            buttonNext.style.display = definitionSet.CSS.display.none;
         }; //hideFound
         hideFound();
 
@@ -23,14 +31,14 @@ class Search {
         pattern.onkeydown = event => {
             if (!findHandler) return;
             if (event.key != definitionSet.keyboard.enter) return;
-            const found = findHandler(pattern.value, matchCase.isDown, wholeWord.isDown, regexp.isDown);
-            indicator.textContent = definitionSet.search.foundNumber(found);
+            const found = findHandler(pattern.value, matchCase.isDown, wholeWord.isDown, useRegexp.isDown);
+            searchResults.textContent = definitionSet.search.foundNumber(found);
             if (found > 0)
-                findNextButton.style.display = definitionSet.CSS.display.button;
+                buttonNext.style.display = definitionSet.CSS.display.button;
         } //pattern.onkeydown
 
         if (findNextHandler)
-            findNextButton.onclick = () => findNextHandler();
+            buttonNext.onclick = () => findNextHandler();
 
         const setButtonChangeHandler = button => {
 
@@ -43,7 +51,7 @@ class Search {
 
         setButtonChangeHandler(matchCase);
         setButtonChangeHandler(wholeWord);
-        setButtonChangeHandler(regexp);
+        setButtonChangeHandler(useRegexp);
 
     } //constructor
 
