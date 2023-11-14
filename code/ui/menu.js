@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container) {
 
-    const version = "0.2.6";
+    const version = "0.2.7";
     if (!new.target) return version; this.version = version;
 
     if (!container) return;
@@ -215,31 +215,33 @@ function menuGenerator (container) {
             else
                 select(row[0].element, true);
         }; //this.activate
-        Object.defineProperty(this, "options", {
-            set(customOptions) {
-                const specialize = (defaultValue, value) => {
-                    if (value == null) return defaultValue;
-                    const newValue = {};
-                    for (let index in defaultValue) {
-                        if (value[index] !== undefined) {
-                            if (value[index] != null &&
-                                defaultValue[index] != null &&
-                                value[index].constructor == Object &&
-                                defaultValue[index].constructor == Object)
-                                newValue[index] = specialize(defaultValue[index], value[index]);
-                            else
-                                newValue[index] = value[index];
-                        } else
-                            newValue[index] = defaultValue[index];
-                    } //loop
-                    return newValue;
-                } //specialize
-                menuOptions = specialize(menuOptions, customOptions);
-                remapKeyboardShortcuts();
-            }, //set
-            enumerable: true,
-            configurable: true,
-          });
+        Object.defineProperties(this, {
+            options: {
+                set(customOptions) {
+                    const specialize = (defaultValue, value) => {
+                        if (value == null) return defaultValue;
+                        const newValue = {};
+                        for (let index in defaultValue) {
+                            if (value[index] !== undefined) {
+                                if (value[index] != null &&
+                                    defaultValue[index] != null &&
+                                    value[index].constructor == Object &&
+                                    defaultValue[index].constructor == Object)
+                                    newValue[index] = specialize(defaultValue[index], value[index]);
+                                else
+                                    newValue[index] = value[index];
+                            } else
+                                newValue[index] = defaultValue[index];
+                        } //loop
+                        return newValue;
+                    } //specialize
+                    menuOptions = specialize(menuOptions, customOptions);
+                    remapKeyboardShortcuts();
+                }, //set
+                enumerable: true,
+                configurable: false,    
+            }, //options
+        });
         this.onShown = handler => onShownHandler = handler;
         this.toString = () => {
             return createSelfDocumentedList(this);
