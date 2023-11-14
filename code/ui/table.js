@@ -16,6 +16,7 @@ class Table {
     #modifiedEvent = new CustomEvent(definitionSet.eventHandler.modifiedEvent);
     #notifyReadonly = null;
     #notifyModified = null;
+    #showHint = null;
     #modified = false;
 
     constructor(parent) {
@@ -26,6 +27,27 @@ class Table {
         const head = this.#table.createTHead();
         this.#headerRow = head.insertRow();
         this.#body = this.#table.createTBody();
+
+        const hint = document.createElement(definitionSet.table.hint);
+        hint.style.position = definitionSet.CSS.display.hint;
+        hint.style.visibility = definitionSet.CSS.visibility.hidden;
+        hint.textContent = definitionSet.table.editingHint;
+        hint.style.zIndex = Number.MAX_SAFE_INTEGER;
+        parent.appendChild(hint);
+        this.#showHint = cell => {
+            hint.style.visibility = cell == null
+                ? definitionSet.CSS.visibility.hidden
+                : definitionSet.CSS.visibility.visible;
+                if (cell) {
+                    const rectangle = cell.getBoundingClientRect();
+                    hint.style.top = definitionSet.CSS.coordinate(
+                        rectangle.top + definitionSet.table.hintOffset.y - hint.offsetHeight);
+                    hint.style.left =
+                        definitionSet.CSS.coordinate(rectangle.left  + definitionSet.table.hintOffset.x);
+                } //if
+        } //this.#showHint
+
+
         for (let xIndex = -1; xIndex <= propertyCount; ++xIndex) {
             const cell = document.createElement(definitionSet.table.headerTag);
             this.#headerRow.appendChild(cell);
@@ -228,7 +250,7 @@ class Table {
         if (page)
             rowIndex += this.#getVisibleCellNumber() - 2;
         if (rowIndex + 1 >= this.#body.rows.length) rowIndex = this.#body.rows.length - 2;
-        this.#select(this.#body.rows[rowIndex + 1].cells[newX], true); //SA???
+        this.#select(this.#body.rows[rowIndex + 1].cells[newX], true);
     } //#selectDown
     #selectTop() {
         const x = this.#selectedCell.cellIndex;
@@ -363,7 +385,7 @@ class Table {
         if (this.#isReadOnly) return;
         if (!cell) return;
         cell.contentEditable = true;
-        cell.title = definitionSet.table.editingHint(true); // SA??? to improve
+        this.#showHint(cell);
         this.#editingCell = cell;
         this.#savedCellData = cell.innerHTML;
         cell.onkeydown = event => {
@@ -376,7 +398,7 @@ class Table {
         } //cell.onkeydown
     } //#editCell
     #stopEditing(cell, cancel, isSelection) {
-        cell.title = definitionSet.table.editingHint(false);
+        this.#showHint();
         this.#table.focus();
         this.#editingCell = null;
         cell.contentEditable = false;

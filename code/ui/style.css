@@ -28,13 +28,18 @@ td { vertical-align: top; }
 th { background-color: lightgray; }
 td, th { white-space: nowrap; }
 textarea { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
-/* selection and focus: keep .select in sync with definitionSet.CSS: */
+color: gray; /* se font-style:  and focus: keep .select in sync with definitionSet.CSS: */
 table:not(:focus) td:not(.select) { background-color: hsl(0, 0%, 90%); }
 td:first-child, td:last-child { background-color: lightgray; text-align: right; }
 td.select { background-color: steelBlue; color: white; }
 td.found { outline: 6px solid orange; outline-offset: -3px; }
 td:focus, th:focus { background-color: white; color: navy; outline: none; }
 table:not(:focus) td:not(:focus).select { opacity: 50%; }
+cite {
+    background-color: aliceblue;border: solid 0.4px gray; color: gray; border-radius: 0.3em;
+    padding: var(--padding-horizontal);
+    color: gray; font-size: 80%; font-weight: 100; font-style: normal;
+}
 /* footer */
 footer > * { display: inline-block; vertical-align: middle; }
 footer { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }

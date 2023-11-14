@@ -3,7 +3,7 @@
 const definitionSet = {
 
     product: "Personal Database",
-    version: "2.5",
+    version: "2.6",
 
     productFormat: function() { return `${this.product} v.&thinsp;${this.version}`; },
     titleFormat: function(value) { return value ? `${value} — ${this.product}` : `${this.product}` },
@@ -43,7 +43,9 @@ const definitionSet = {
         initialPropertyName: "Name",
         initialData: { properties: ["Name"], values: [], records: [[]]},
         initialValue: "",
-        editingHint: editing => editing ? "Ctrl+Enter: commit, Escape: cancel" : "",
+        editingHint: "Ctrl+Enter: commit, Escape: cancel",
+        hint: "cite",
+        hintOffset: { x: -3, y: -4 },
     },
 
     display: {
@@ -89,6 +91,7 @@ const definitionSet = {
         display: {
             none: "none",
             button: "inline",
+            hint: "absolute",
         },
     },
 
