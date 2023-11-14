@@ -20,31 +20,24 @@ window.onload = () => {
 
     const elements = getElements();
 
-    document.querySelector("#product").innerHTML = definitionSet.productFormat();
+    elements.product.innerHTML = definitionSet.productFormat();
     document.title = definitionSet.titleFormat();
 
-    const commandSet = createCommandSet();
-    const mainMenu = new menuGenerator(document.querySelector("header > menu"));
-    const contextMenu = new menuGenerator(document.querySelector("main select"));
+    const commandSets = createCommandSet();
+    const commandSet = commandSets.commandSet;
+    const mainMenu = new menuGenerator(elements.mainMenu);
+
+    const contextMenu = new menuGenerator(elements.contextMenu);
     (() => { //menu:
         mainMenu.options = { afterActionBehavior: { hide: true } };
         mainMenu.subscribe(commandSet);
+        mainMenu.subscribe(commandSets.aboutCommandSet);
         contextMenu.subscribe(commandSet);
         contextMenu.onShown(() => {
-            errorElement.style.display = definitionSet.display.hide;
-            errorElement.style.textContent = null;
-        }); //contextMenu.onShown   
-        mainMenu.subscribe("About", actionRequest => {
-            if (!actionRequest) return;
-            window.open("https://SAKryukov.org", "_blank");            
-        });
-        mainMenu.subscribe("Source Code", actionRequest => {
-            if (!actionRequest) return;
-            window.open("https://www.github.com/SAKryukov/personal-database-dynamic-schema", "_blank");            
-        });
+            elements.errorElement.style.display = definitionSet.display.hide;
+            elements.errorElement.style.textContent = null;
+        }); //contextMenu.onShown
     })(); //menu
-
-    const errorElement = document.querySelector("#error");
 
     (() => { //context menu activation:
         let lastPointerX = 0;
@@ -63,73 +56,64 @@ window.onload = () => {
         }; //window.oncontextmenu    
     })(); //
     
-    const summary = new Summary(
-        document.querySelector("#summary-title"),
-        document.querySelector("#summary-created"),
-        document.querySelector("#summary-updated"),
-        document.querySelector("#summary-description")
-    );
-    const readOnlyIndicator = document.querySelector("#read-only");
-    const modifiedIndicator = document.querySelector("#modified");
-    const table = new Table(document.querySelector("main"));
-    
-    commandSet.table = table;
+    const summary = new Summary(elements);   
+    commandSet.table = new Table(elements.main);
 
     window.addEventListener(definitionSet.eventHandler.readOnlyEvent, () => {
         const value = commandSet.table.isReadOnly;
-        readOnlyIndicator.textContent = definitionSet.eventHandler.readOnlyIndicator[value ? 1 : 0];
+        elements.indicators.readOnly.textContent = definitionSet.eventHandler.readOnlyIndicator[value ? 1 : 0];
     });
     window.addEventListener(definitionSet.eventHandler.modifiedEvent, () => {
-        modifiedIndicator.textContent = definitionSet.eventHandler.modifiedIndicator;
+        elements.indicators.modified.textContent = definitionSet.eventHandler.modifiedIndicator;
     });
     window.addEventListener(definitionSet.eventHandler.storedEvent, () => {
         commandSet.table.isModified = false;
-        modifiedIndicator.textContent = null;
+        elements.indicators.modified.textContent = null;
     });
-    window.addEventListener("beforeunload", event => { // protect from losing unsaved data
+    
+    window.onbeforeunload = event => {
         const requiresConfirmation = commandSet.table.isModified;
         if (requiresConfirmation) { // guarantee unload prompt for all browsers:
             event.preventDefault(); // guarantees showing confirmation dialog
             event.returnValue = true; // show confirmation dialog
         } else // to guarantee unconditional unload
             delete (event.returnValue);
-    }); // protect from losing unsaved data
-
-    table.isReadOnly = false;
+    };
+    
+    commandSet.table.isReadOnly = false;
     if (commandLineParameter && typeof SAPersonalDatabase != typeof undefined) {
         if (SAPersonalDatabase.name != definitionSet.scripting.dataFunctionName())
             definitionSet.scripting.alert();
         const data = JSON.parse(SAPersonalDatabase());
-        table.load(data);
+        commandSet.table.load(data);
         summary.populate(data);
         document.title = definitionSet.titleFormat(data.summary.title);
-        table.isReadOnly = true;
+        commandSet.table.isReadOnly = true;
     } //if
-    table.focus();
+    commandSet.table.focus();
 
-    const main = document.querySelector("main");
     new Search(
         elements,
-        (pattern, matchCase, wholeWord, isRegexp) => table.find(pattern, matchCase, wholeWord, isRegexp),
-        () => table.hideFound(),
-        () => table.findNext()
+        (pattern, matchCase, wholeWord, isRegexp) => commandSet.table.find(pattern, matchCase, wholeWord, isRegexp),
+        () => commandSet.table.hideFound(),
+        () => commandSet.table.findNext()
     );
 
     (()=> { //set hints:
         new Hint(
-            main,
-            modifiedIndicator,
+            elements.main,
+            elements.indicators.modified,
             definitionSet.table.hintTimeout);
     })(); //set hints
 
     window.onkeydown = event => {
         if (event.key == definitionSet.keyboard.findNext) {
-            table.findNext();
+            commandSet.table.findNext();
             event.preventDefault();
         } //if
     }; //window.onkeydown
 
     commandSet.summary = summary;
-    commandSet.errorElement = errorElement;
+    commandSet.errorElement = elements.errorElement;
 
 }; //window.onload

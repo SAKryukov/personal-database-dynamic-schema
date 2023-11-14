@@ -161,6 +161,16 @@ const createCommandSet = () => {
         }
     });
 
-    return commandSet;
+    const aboutCommandSet = new Map();
+    aboutCommandSet.set("About", actionRequest => {
+        if (!actionRequest) return;
+        window.open("https://SAKryukov.org", "_blank");            
+    });
+    aboutCommandSet.set("Source Code", actionRequest => {
+        if (!actionRequest) return;
+        window.open("https://www.github.com/SAKryukov/personal-database-dynamic-schema", "_blank");            
+    });
+
+    return { commandSet, aboutCommandSet };
 
 };

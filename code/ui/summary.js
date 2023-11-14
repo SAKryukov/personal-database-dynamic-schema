@@ -5,16 +5,16 @@ class Summary {
     #updated = null;
     #description = null;
 
-    constructor(title, created, updated, description) {
-        this.#title = title;
-        this.#created = created;
-        this.#updated = updated;
-        this.#description = description;
+    constructor(elements){
+        this.#title = elements.summary.title;
+        this.#created = elements.summary.created;
+        this.#updated = elements.summary.updated;
+        this.#description = elements.summary.description;
         this.populate({});
         const modifiedEvent = new CustomEvent(definitionSet.eventHandler.modifiedEvent);
-        const nofityModified = function() { window.dispatchEvent(modifiedEvent); }
-        description.onchange = function() { nofityModified(); };
-        title.onchange = function() { nofityModified(); };
+        const notifyModified = function() { window.dispatchEvent(modifiedEvent); }
+        this.#description.onchange = function() { notifyModified(); };
+        this.#title.onchange = function() { notifyModified(); };
     } //constructor
 
     #getTimeNow() {
