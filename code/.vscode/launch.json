@@ -12,7 +12,7 @@
             "name": "Main",
             "type": "chrome",
             "request": "launch",
-            "file": "${workspaceFolder}/metadata/about.html",
+            "file": "${workspaceFolder}/index.html",
         }
     ]
 }
