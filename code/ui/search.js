@@ -1,6 +1,12 @@
 class Search {
 
-    constructor(pattern, matchCase, wholeWord, regexp, indicator, findNextButton, findHandler, hideFoundHandler, findNextHandler) {
+    constructor(pattern, main, matchCase, wholeWord, regexp, indicator, findNextButton, findHandler, hideFoundHandler, findNextHandler) {
+
+        new Hint(main, pattern);
+        new Hint(main, matchCase.element);
+        new Hint(main, wholeWord.element);
+        new Hint(main, regexp.element);
+        new Hint(main, findNextButton);
 
         const hideFound = () => {
             indicator.textContent = null;

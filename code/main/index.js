@@ -105,8 +105,10 @@ window.onload = () => {
     } //if
     table.focus();
 
+    const main = document.querySelector("main");
     new Search(
         document.querySelector("#search"),
+        main,
         new TwoStateButton(document.querySelector("#search-match-case"), definitionSet.CSS.buttonUp, definitionSet.CSS.buttonDown, true),
         new TwoStateButton(document.querySelector("#search-whole-word"), definitionSet.CSS.buttonUp, definitionSet.CSS.buttonDown, false),
         new TwoStateButton(document.querySelector("#search-regexp"), definitionSet.CSS.buttonUp, definitionSet.CSS.buttonDown, false),
@@ -116,6 +118,13 @@ window.onload = () => {
         () => table.hideFound(),
         () => table.findNext()
     );
+
+    (()=> { //set hints:
+        new Hint(
+            main,
+            modifiedIndicator,
+            definitionSet.table.hintTimeout);
+    })(); //set hints
 
     window.onkeydown = event => {
         if (event.key == definitionSet.keyboard.findNext) {
