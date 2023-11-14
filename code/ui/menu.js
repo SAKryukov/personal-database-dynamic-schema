@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container) {
 
-    const version = "0.2.5";
+    const version = "0.2.6";
     if (!new.target) return version; this.version = version;
 
     if (!container) return;
@@ -446,12 +446,14 @@ function menuGenerator (container) {
                     else
                         select(current, false);
                     reset();
+                    event.preventDefault();
                     break;
                 case definitionSet.keyboard.enter:
                     const optionData = elementMap.get(event.target.options[event.target.selectedIndex]);
                     const clickData = { action: optionData.shadowValue };
                     container.dispatchEvent(
                         new CustomEvent(definitionSet.events.optionClick, { detail: clickData }));
+                    event.preventDefault();
                     break;
                 case definitionSet.keyboard.up:
                     if (event.target.selectedIndex < 1) {
