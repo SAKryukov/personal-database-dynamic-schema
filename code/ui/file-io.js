@@ -1,4 +1,10 @@
-// Copyright (c) Sergey A Kryukov, 2017-2021
+/*
+Personal Database
+
+Copyright (c) 2017, 2023 by Sergey A Kryukov
+http://www.SAKryukov.org
+http://www.codeproject.com/Members/SAKryukov
+*/
 
 "use strict";
 

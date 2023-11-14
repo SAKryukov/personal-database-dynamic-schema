@@ -1,9 +1,18 @@
-﻿"use strict";
+﻿/*
+Personal Database
+
+Copyright (c) 2017, 2023 by Sergey A Kryukov
+http://www.SAKryukov.org
+http://www.codeproject.com/Members/SAKryukov
+*/
+
+"use strict";
 
 const definitionSet = {
 
     product: "Personal Database",
     version: "2.7.4",
+    years: "2017, 2003",
 
     productFormat: function() { return `${this.product} v.&thinsp;${this.version}`; },
     titleFormat: function(value) { return value ? `${value} — ${this.product}` : `${this.product}` },

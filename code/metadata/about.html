@@ -1,0 +1,37 @@
+﻿<!doctype HTML>
+
+<!--
+Personal Database
+
+Copyright (c) 2017, 2023 by Sergey A Kryukov
+http://www.SAKryukov.org
+http://www.codeproject.com/Members/SAKryukov
+-->
+
+<html lang="en-us">
+    <head>
+        <script src="definitionSet.js"></script>
+        <style>
+            @import url(../ui/style.css);
+            header{ padding: 1em; padding-top: 1.6em; }
+            p { padding-left: 2em; padding-top: 0.3em; }
+            p:first-child { padding-top: 2em; }
+            header { text-align: center; font-size: 130%; }
+        </style>
+    </head>
+<body>
+    <header>Personal Database</header>
+    <main>
+        <p>Copyright &copy; <a href="http://www.SAKryukov.org">Sergey A Kryukov</a>, <span id="years"></span></p>
+        <p><a href="https://www.github.com/SAKryukov/personal-database-dynamic-schema">Source code</a></p>
+        <p>See also: <a href="https://www.codeproject.com/Members/SAKryukov">Code Project</a></p>
+    </main>
+    <footer><span>ee</span></footer>
+    <script>
+        const version = document.querySelector("footer span");
+        const years = document.querySelector("#years");
+        years.textContent = definitionSet.years;
+        version.innerHTML = definitionSet.productFormat(definitionSet.product, definitionSet.version);
+    </script>
+</body>
+</html>

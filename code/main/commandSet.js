@@ -1,3 +1,11 @@
+/*
+Personal Database
+
+Copyright (c) 2017, 2023 by Sergey A Kryukov
+http://www.SAKryukov.org
+http://www.codeproject.com/Members/SAKryukov
+*/
+
 "use strict";
 
 const createCommandSet = () => {
@@ -164,7 +172,7 @@ const createCommandSet = () => {
     const aboutCommandSet = new Map();
     aboutCommandSet.set("About", actionRequest => {
         if (!actionRequest) return;
-        window.open("https://SAKryukov.org", "_blank");            
+        window.open("./metadata/about.html", "_blank");            
     });
     aboutCommandSet.set("Source Code", actionRequest => {
         if (!actionRequest) return;
