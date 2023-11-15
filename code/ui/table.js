@@ -477,6 +477,8 @@ class Table {
             this.#selectedCell.innerHTML = definitionSet.stringCleanup.toHtml(value);
             this.#addRowOnEdit(this.#selectedCell);
             this.#notifyModified();
+        }).catch(pasteException => {
+            console.info(pasteException);
         });
     } //fromClipboard
 

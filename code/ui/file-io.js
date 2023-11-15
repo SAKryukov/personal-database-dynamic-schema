@@ -67,7 +67,11 @@ const fileIO = (() => {
             stream.write(content).then(() => {
                 stream.close();
                 notifyStored();
+            }).catch(writeException => {
+                console.info(writeException);
             });
+        }).catch(createWritableException => {
+            console.info(createWritableException);
         });
     }; //saveFileWithHandle
 
@@ -80,8 +84,14 @@ const fileIO = (() => {
             handles[0].getFile().then(file => {
                 file.text().then(text => {
                     fileHandler(handles[0].name, text);
+                }).catch(fileTextException => {
+                    console.info(fileTextException);
                 });
+            }).catch(getFileException => {
+                console.log(getFileException);
             });
+        }).catch(openFilePicketException => {
+            console.info(openFilePicketException);
         });
     }; //loadTextFile
 
@@ -90,6 +100,8 @@ const fileIO = (() => {
             if (!handle) return;
             fileHandleSave = handle;
             saveFileWithHandle(handle, content);
+        }).catch(saveFilePickerException => {
+            console.info(saveFilePickerException);
         });
     }; //storeFile
 
