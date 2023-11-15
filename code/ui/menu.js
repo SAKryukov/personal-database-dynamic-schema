@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container) {
 
-    const version = "0.2.8";
+    const version = "0.2.9";
     if (!new.target) return version; this.version = version;
 
     if (!container) return;
@@ -212,8 +212,9 @@ function menuGenerator (container) {
             else
                 select(row[0].element, true);
         }; //this.activate
-        Object.defineProperties(this, {
+        Object.defineProperties(this, {            
             options: {
+                get() { return menuOptions },
                 set(customOptions) {
                     const specialize = (defaultValue, value) => {
                         if (value == null) return defaultValue;
@@ -238,8 +239,13 @@ function menuGenerator (container) {
                 enumerable: true,
                 configurable: false,    
             }, //options
+            onShown: {
+                get() { return onShownHandler; },
+                set(handler) { onShownHandler = handler; },                
+                enumerable: true,
+                configurable: false,    
+            }, //onShown
         });
-        this.onShown = handler => onShownHandler = handler;
         this.toString = () => {
             return createSelfDocumentedList(this);
         }; //this.toString
