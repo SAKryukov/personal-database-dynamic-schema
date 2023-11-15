@@ -13,6 +13,14 @@ const createCommandSet = () => {
     const commandSet = new Map();
     const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
     const notifyStored = () => window.dispatchEvent(storedEvent);
+
+    const showException = exception => {
+        document.title = definitionSet.titleFormat();
+        commandSet.errorElement.textContent = exception.toString();
+        commandSet.errorElement.style.display = definitionSet.display.errorElementShow;
+    }; //showException
+
+    const fileIO = createFileIO(showException);
             
     commandSet.actConfirmed = function (action) {
         if (this.table.isModified) {
@@ -29,12 +37,6 @@ const createCommandSet = () => {
         } else
             action();
     }; //commandSet.actConfirmed
-
-    const showException = exception => {
-        document.title = definitionSet.titleFormat();
-        commandSet.errorElement.textContent = exception.toString();
-        commandSet.errorElement.style.display = definitionSet.display.errorElementShow;
-    }; //showException
 
     const showTitle = data => {
         const title = data ? (data.summary ? data.summary.title : null) : null;

@@ -8,7 +8,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 "use strict";
 
-const fileIO = (() => {
+const createFileIO = showException => {
 
     const experimentalImplementation = window.showOpenFilePicker && window.showSaveFilePicker;
     const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
@@ -18,6 +18,14 @@ const fileIO = (() => {
     let fileHandleSave = undefined;
     let fileHandleOpen = undefined;
     const canSave = () => experimentalImplementation ? fileHandleSave != null : previouslyOpenedFilename != null;
+
+    const exceptionHandler = exception => {
+        if (showException != null &&
+            //SA??? cannot see the other way to detect "The user aborted a request",
+            // in contrast to "real" I/O error:
+            !exception.message.toLowerCase().includes("user")) 
+            showException(exception);
+    }; //exceptionHandler
 
     const storeFileFallback = (fileName, content) => {
         const link = document.createElement('a');
@@ -68,10 +76,10 @@ const fileIO = (() => {
                 stream.close();
                 notifyStored();
             }).catch(writeException => {
-                console.info(writeException);
+                exceptionHandler(writeException);
             });
         }).catch(createWritableException => {
-            console.info(createWritableException);
+            exceptionHandler(createWritableException);
         });
     }; //saveFileWithHandle
 
@@ -85,13 +93,13 @@ const fileIO = (() => {
                 file.text().then(text => {
                     fileHandler(handles[0].name, text);
                 }).catch(fileTextException => {
-                    console.info(fileTextException);
+                    exceptionHandler(fileTextException);
                 });
             }).catch(getFileException => {
-                console.log(getFileException);
+                exceptionHandler(getFileException);
             });
         }).catch(openFilePicketException => {
-            console.info(openFilePicketException);
+            exceptionHandler(openFilePicketException);
         });
     }; //loadTextFile
 
@@ -101,7 +109,7 @@ const fileIO = (() => {
             fileHandleSave = handle;
             saveFileWithHandle(handle, content);
         }).catch(saveFilePickerException => {
-            console.info(saveFilePickerException);
+            exceptionHandler(saveFilePickerException);
         });
     }; //storeFile
 
@@ -119,4 +127,4 @@ const fileIO = (() => {
         loadTextFile: experimentalImplementation ? loadTextFile : loadTextFileFallback,
     };
 
-})(); //fileIO
+}; //createFileIO

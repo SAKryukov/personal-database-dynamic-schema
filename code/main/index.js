@@ -41,10 +41,12 @@ window.onload = () => {
         mainMenu.subscribe(commandSet);
         mainMenu.subscribe(commandSets.aboutCommandSet);
         contextMenu.subscribe(commandSet);
-        contextMenu.onShown(() => {
+        const onMenuShown = () => {
             elements.errorElement.style.display = definitionSet.display.hide;
             elements.errorElement.style.textContent = null;
-        }); //contextMenu.onShown
+        }; //contextMenu.onShown
+        mainMenu.onShown = onMenuShown;
+        contextMenu.onShown = onMenuShown;
     })(); //menu
 
     (() => { //context menu activation:
