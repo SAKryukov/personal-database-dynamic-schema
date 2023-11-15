@@ -18,12 +18,6 @@ class Search {
         const searchResults = elements.search.searchResults;
         const buttonNext = elements.search.buttonNext;
 
-        new Hint(elements.main, pattern);
-        new Hint(elements.main, elements.search.options.matchCase);
-        new Hint(elements.main, elements.search.options.wholeWord);
-        new Hint(elements.main, elements.search.options.useRegexp);
-        new Hint(elements.main, buttonNext);
-
         const hideFound = () => {
             searchResults.textContent = null;
             buttonNext.style.display = definitionSet.CSS.display.none;

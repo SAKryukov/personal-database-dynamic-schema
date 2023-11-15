@@ -110,10 +110,12 @@ window.onload = () => {
     );
 
     (()=> { //set hints:
-        new Hint(
-            elements.main,
-            elements.indicators.modified,
-            definitionSet.table.hintTimeout);
+        new Hint(elements.main, elements.search.searchPattern);
+        new Hint(elements.main, elements.search.options.matchCase);
+        new Hint(elements.main, elements.search.options.wholeWord);
+        new Hint(elements.main, elements.search.options.useRegexp);
+        new Hint(elements.main, elements.search.buttonNext);
+        new Hint(elements.main, elements.indicators.modified);
     })(); //set hints
 
     window.onkeydown = event => {

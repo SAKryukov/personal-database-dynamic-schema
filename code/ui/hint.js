@@ -8,28 +8,26 @@ http://www.codeproject.com/Members/SAKryukov
 
 "use strict";
 
-const Hint = function (parent, target) {
+const Hint = function (parent, textOrTarget) {
 
     let text, time;
     
-    if (target.constructor == String) {
-        text = target;
-        time = undefined;
-    } else {
-        text = target.title;
-        target.title = definitionSet.table.initialValue;    
+    if (textOrTarget instanceof HTMLElement) {
+        text = textOrTarget.title;
+        textOrTarget.title = definitionSet.table.initialValue;    
         time = definitionSet.table.hintTimeout;
-    } //if
+    } else if (textOrTarget.constructor == String)
+        text = textOrTarget;
 
     const element = document.createElement(definitionSet.table.hint);
+    element.textContent = text;
     element.style.visibility = definitionSet.CSS.visibility.hidden;
     element.style.position = definitionSet.CSS.display.hint;
     element.style.zIndex = Number.MAX_SAFE_INTEGER;
-    element.textContent = text;
     parent.appendChild(element);
 
-    const show = function (remove, currentTarget) {
-        if (!currentTarget) currentTarget = target;
+    const show = function (currentTarget, remove) {
+        if (!currentTarget) currentTarget = textOrTarget;
         element.style.visibility = remove
             ? definitionSet.CSS.visibility.hidden
             : definitionSet.CSS.visibility.visible;
@@ -41,22 +39,16 @@ const Hint = function (parent, target) {
                 definitionSet.CSS.coordinate(rectangle.left  + definitionSet.table.hintOffset.x);
         } //if
     } //show
+    this.show = cell => show(cell, cell == null);
 
-    this.show = cell => {
-        if (cell)
-            show(false, cell);
-        else
-            show(true);
-    } //this.show
-
-    if (target && target instanceof HTMLElement) {
-        target.addEventListener("pointerenter", () => {
-            show();
+    if (textOrTarget && textOrTarget instanceof HTMLElement) {
+        textOrTarget.onpointerenter = () => {
+            show(null);
             if (time)
-                setTimeout(() => show(true), time);
-        }); //target.onpointerenter
-        target.onmouseleave = () => {
-            show(true);
+                setTimeout(() => show(null, true), time);
+        }; //target.onpointerenter
+        textOrTarget.onmouseleave = () => {
+            show(null, true);
         }; //target.onpointerleave    
     } //if
 
