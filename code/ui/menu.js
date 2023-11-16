@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container) {
     
-    const version = "0.2.11";
+    const version = "0.2.12";
     if (!new.target) return version; 
 
     if (!container) return;
@@ -112,7 +112,7 @@ function menuGenerator (container) {
     const elementMap = new Map();
     const keyboardMap = new Map();
 
-    const createSelfDocumentedList = self => {
+    const describeSelfDocumentedAPI = self => {
         const propertyNames = [];
         for (const index in self) {
             if (index == definitionSet.apiHint.exclude)
@@ -126,7 +126,7 @@ function menuGenerator (container) {
             } //if
         } //loop
         return definitionSet.apiHint.stringify(propertyNames);
-    }; //createSelfDocumentedList
+    }; //describeSelfDocumentedAPI
 
     function menuItemProxyApi(menuItem) {
         const setBox = newButton => {
@@ -136,134 +136,131 @@ function menuGenerator (container) {
                 definitionSet.toString(boxMap.get(newButton));
             menuItem.textContent = menuItemData.shadowButtonText + menuItemData.shadowText;
         }; //setBox
-        this.changeText = text => {
-            const menuItemData = elementMap.get(menuItem);
-            menuItemData.shadowText = definitionSet.toString(text);
-            menuItem.textContent = menuItemData.shadowButtonText + menuItemData.shadowText;
-        }; //this.changeText
-        this.setCheckBox = () => {
-            setBox(menuItemButtonState.checkBox);
-        }; //this.setCheckBox
-        this.setCheckedCheckBox = () => {
-            setBox(menuItemButtonState.checkedCheckbox);
-        }; //this.setCheckedCheckBox
-        this.setRadioButton = () => {
-            setBox(menuItemButtonState.radioButton);
-        }; //setRadioButton
-        this.setCheckedRadioButton = () => {
-            setBox(menuItemButtonState.checkedRadioButton);
-        }; //setCheckedRadioButton
-        this.clearBoxesButtons = () => {
-            setBox(menuItemButtonState.none);
-        }; //this.clearBoxesButtons
-        this.enable = () => {
-            menuItem.disabled = false;
-        }; //enable
-        this.disable = () => {
-            menuItem.disabled = true;
-        }; //disable
-        this.toString = () => {
-            return createSelfDocumentedList(this);
-        }; //this.toString
+        Object.defineProperties(this, {
+            changeText: {
+                get() {
+                    return text => {
+                        const menuItemData = elementMap.get(menuItem);
+                        menuItemData.shadowText = definitionSet.toString(text);
+                        menuItem.textContent = menuItemData.shadowButtonText + menuItemData.shadowText;
+                    };
+                }, enumerable: true
+            },
+            setCheckBox: {
+                get() { return () => setBox(menuItemButtonState.checkBox) }, enumerable: true },
+            setCheckedCheckBox: {
+                get() { return () => setBox(menuItemButtonState.checkedCheckbox) }, enumerable: true },
+            setRadioButton: {
+                get() { return () => setBox(menuItemButtonState.radioButton) }, enumerable: true },
+            setCheckedRadioButton: {
+                get() { return () => setBox(menuItemButtonState.checkedRadioButton) }, enumerable: true },
+            clearBoxesButtons: {
+                get() { return () => setBox(menuItemButtonState.none) }, enumerable: true },
+            enable: {
+                get() { return () => menuItem.disabled = false }, enumerable: true },
+            disable: {
+                get() { return () => menuItem.disabled = true }, enumerable: true },
+        }); //Object.defineProperties
+        this.toString = function() { return describeSelfDocumentedAPI(this); };
         Object.freeze(this);
     }; // menuItemProxyApi
     
-    (() => { //this.API:
-        this.subscribe = (value, action) => {
-            if (!value) return;
-            if (value instanceof Map) {
-                for (const [key, command] of value)
-                    command.menuItemHandle = this.subscribe(key, command);
-            } else {
-                const actionMapData = actionMap.get(value);
-                if (!actionMapData)
-                    throw new MenuSubscriptionFailure(
-                        definitionSet.exceptions.menuItemSubscriptionFailure(value));
-                actionMapData.action = action;
-                return new menuItemProxyApi(actionMapData.menuItem);    
-            } //if
-        }; //this.subscribe
-        this.activate = (pointerX, pointerY) => {
-            if (isContextMenu) {
-                container.style.zIndex = Number.MAX_SAFE_INTEGER;
-                updateStates(container);
-                container.style.position = definitionSet.css.positionAbsolute;
-                container.style.display = definitionSet.css.show;
-                const rectangle = container.getBoundingClientRect();
-                const optimizeLocation = (pointer, max, size) => {
-                    const center = (max - size) / 2;
-                    if (pointer == null) return center;
-                    let result = pointer;
-                    if (result + size > max)
-                        result = pointer - size;
-                    if (result < 0)
-                        return center;
-                    return result;
-                }; //optimizeLocation
-                container.style.left =
-                    definitionSet.css.pixels(optimizeLocation(pointerX, window.innerWidth, rectangle.width));
-                container.style.top =
-                    definitionSet.css.pixels(optimizeLocation(pointerY, window.innerHeight, rectangle.height));
-                if (menuOptions.afterActionBehavior.reset)
-                    container.selectedIndex = 0;
-                setTimeout(() => container.focus());
-                return;
-            } //if
-            if (row.left < 1) return;
-            if (current)
-                select(current, true);
-            else
-                select(row[0].element, true);
-        }; //this.activate
-        Object.defineProperties(this, {            
-            options: {
-                get() { return menuOptions },
-                set(customOptions) {
-                    const specialize = (defaultValue, value) => {
-                        if (value == null) return defaultValue;
-                        const newValue = {};
-                        for (let index in defaultValue) {
-                            if (value[index] !== undefined) {
-                                if (value[index] != null &&
-                                    defaultValue[index] != null &&
-                                    value[index].constructor == Object &&
-                                    defaultValue[index].constructor == Object)
-                                    newValue[index] = specialize(defaultValue[index], value[index]);
-                                else
-                                    newValue[index] = value[index];
-                            } else
-                                newValue[index] = defaultValue[index];
-                        } //loop
-                        return newValue;
-                    } //specialize
-                    menuOptions = specialize(menuOptions, customOptions);
-                    remapKeyboardShortcuts();
-                }, //set
-                enumerable: true,
-                configurable: false,    
-            }, //options
-            onShown: {
-                get() { return onShownHandler; },
-                set(handler) { onShownHandler = handler; },                
-                enumerable: true,
-                configurable: false,    
-            }, //onShown
-            onBlur: {
-                get() { return onBlurHandler; },
-                set(handler) { onBlurHandler = handler; },                
-                enumerable: true,
-                configurable: false,    
-            }, //onShown
-            version: {
-                get() { return version; },
-                enumerable: false,
-                configurable: false,
-            }, //onShown
-        });
-        this.toString = () => {
-            return createSelfDocumentedList(this);
-        }; //this.toString
-    })(); //this.API
+    Object.defineProperties(this, { //menu API:
+        subscribe: {
+            get() {
+                return (value, action) => {
+                    if (!value) return;
+                    if (value instanceof Map) {
+                        for (const [key, command] of value)
+                            command.menuItemHandle = this.subscribe(key, command);
+                    } else {
+                        const actionMapData = actionMap.get(value);
+                        if (!actionMapData)
+                            throw new MenuSubscriptionFailure(
+                                definitionSet.exceptions.menuItemSubscriptionFailure(value));
+                        actionMapData.action = action;
+                        return new menuItemProxyApi(actionMapData.menuItem);
+                    } //if            
+                }
+            }, //get subscribe
+            enumerable: true
+        }, //subscribe
+        activate: {
+            get() {
+                return (pointerX, pointerY) => {
+                    if (isContextMenu) {
+                        container.style.zIndex = Number.MAX_SAFE_INTEGER;
+                        updateStates(container);
+                        container.style.position = definitionSet.css.positionAbsolute;
+                        container.style.display = definitionSet.css.show;
+                        const rectangle = container.getBoundingClientRect();
+                        const optimizeLocation = (pointer, max, size) => {
+                            const center = (max - size) / 2;
+                            if (pointer == null) return center;
+                            let result = pointer;
+                            if (result + size > max)
+                                result = pointer - size;
+                            if (result < 0)
+                                return center;
+                            return result;
+                        }; //optimizeLocation
+                        container.style.left =
+                            definitionSet.css.pixels(optimizeLocation(pointerX, window.innerWidth, rectangle.width));
+                        container.style.top =
+                            definitionSet.css.pixels(optimizeLocation(pointerY, window.innerHeight, rectangle.height));
+                        if (menuOptions.afterActionBehavior.reset)
+                            container.selectedIndex = 0;
+                        setTimeout(() => container.focus());
+                        return;
+                    } //if
+                    if (row.left < 1) return;
+                    if (current)
+                        select(current, true);
+                    else
+                        select(row[0].element, true);
+                } //activate
+            }, //get activate
+            enumerable: true
+        }, //activate
+        options: {
+            get() { return menuOptions },
+            set(customOptions) {
+                const specialize = (defaultValue, value) => {
+                    if (value == null) return defaultValue;
+                    const newValue = {};
+                    for (let index in defaultValue) {
+                        if (value[index] !== undefined) {
+                            if (value[index] != null &&
+                                defaultValue[index] != null &&
+                                value[index].constructor == Object &&
+                                defaultValue[index].constructor == Object)
+                                newValue[index] = specialize(defaultValue[index], value[index]);
+                            else
+                                newValue[index] = value[index];
+                        } else
+                            newValue[index] = defaultValue[index];
+                    } //loop
+                    return newValue;
+                } //specialize
+                menuOptions = specialize(menuOptions, customOptions);
+                remapKeyboardShortcuts();
+            }, //set
+            enumerable: true,
+        }, //options
+        onShown: {
+            get() { return onShownHandler; },
+            set(handler) { onShownHandler = handler; },
+            enumerable: true,
+        }, //onShown
+        onBlur: {
+            get() { return onBlurHandler; },
+            set(handler) { onBlurHandler = handler; },
+            enumerable: true,
+        }, //onShown
+        version: {
+            get() { return version; },
+        }, //onShown
+    }); //menu API
 
     const remapKeyboardShortcuts = () => {
         keyboardMap.clear();
@@ -521,7 +518,9 @@ function menuGenerator (container) {
         }; //optionHandler
         const setupOption = (option, xPosition, yPosition, optionValue) => {
             elementMap.set(option, { xPosition: xPosition, yPosition: yPosition,
-                shadowValue: optionValue, shadowText: optionValue, shadowButtonText: null, button: menuItemButtonState.none });
+                shadowValue: optionValue, shadowText: optionValue,
+                shadowButtonText: definitionSet.toString(null),
+                button: menuItemButtonState.none });
             actionMap.set(optionValue, { menuItem: option, xPosition: xPosition, action: null });
             data.menuItems.push(option);
             option.onpointerdown = optionHandler;
@@ -586,6 +585,7 @@ function menuGenerator (container) {
         select(row[index].element, true);
     }); //startKeyboardHandling
 
+    this.toString = () => { return describeSelfDocumentedAPI(this); };
     Object.freeze(this);
 
 };
