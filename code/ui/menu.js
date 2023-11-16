@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container) {
     
-    const version = "0.2.10";
+    const version = "0.2.11";
     if (!new.target) return version; 
 
     if (!container) return;
@@ -190,17 +190,20 @@ function menuGenerator (container) {
                 container.style.position = definitionSet.css.positionAbsolute;
                 container.style.display = definitionSet.css.show;
                 const rectangle = container.getBoundingClientRect();
-                if (pointerX != null && pointerY != null) {
-                    container.style.left = pointerX + rectangle.width < window.innerWidth
-                        ? definitionSet.css.pixels(pointerX)
-                        : definitionSet.css.pixels(pointerX - rectangle.width);
-                        container.style.top = pointerY + rectangle.height < window.innerHeight
-                        ? definitionSet.css.pixels(pointerY)
-                        : definitionSet.css.pixels(pointerY - rectangle.height);
-                } else {
-                    container.style.left = css.pixels.coordinate(window.innerWidth / 2);
-                    container.style.top = css.pixels.coordinate(window.innerHeight / 2);
-                } //if
+                const optimizeLocation = (pointer, max, size) => {
+                    const center = (max - size) / 2;
+                    if (pointer == null) return center;
+                    let result = pointer;
+                    if (result + size > max)
+                        result = pointer - size;
+                    if (result < 0)
+                        return center;
+                    return result;
+                }; //optimizeLocation
+                container.style.left =
+                    definitionSet.css.pixels(optimizeLocation(pointerX, window.innerWidth, rectangle.width));
+                container.style.top =
+                    definitionSet.css.pixels(optimizeLocation(pointerY, window.innerHeight, rectangle.height));
                 if (menuOptions.afterActionBehavior.reset)
                     container.selectedIndex = 0;
                 setTimeout(() => container.focus());
@@ -505,6 +508,7 @@ function menuGenerator (container) {
         } //selectElement.onblur
     let optionIndex = 0, optionSize = 0;
         const optionHandler = event => {
+            if (event.target.disabled) return;
             const data = elementMap.get(event.target);
             const menuItemData = elementMap.get(event.target);
             data.action = menuItemData.shadowValue;
