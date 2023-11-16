@@ -1,6 +1,6 @@
 # Personal Database
 
-Dynamic database schema: variable attributes
+Personal single-file in-memory database. Dynamic database schema designed to add and remove columns to the table anytime during editing.
 
 [Demo](https://sakryukov.github.io/personal-database-dynamic-schema/code?../data-samples/history.sadb)
 
