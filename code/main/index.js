@@ -49,7 +49,6 @@ window.onload = () => {
         const onMenuBlur = () => setTimeout(() => commandSet.table.focus() );
         mainMenu.onShown = onMenuShown;
         contextMenu.onShown = onMenuShown;
-        mainMenu.onBlur = onMenuBlur;
         contextMenu.onBlur = onMenuBlur;
     })(); //menu
 
