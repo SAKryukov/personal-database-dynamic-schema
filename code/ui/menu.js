@@ -9,9 +9,9 @@ http://www.codeproject.com/Members/SAKryukov
 "use strict";
 
 function menuGenerator (container) {
-
-    const version = "0.2.9";
-    if (!new.target) return version; this.version = version;
+    
+    const version = "0.2.10";
+    if (!new.target) return version; 
 
     if (!container) return;
     const isContextMenu = container instanceof HTMLSelectElement;
@@ -107,7 +107,7 @@ function menuGenerator (container) {
     } //class MenuSubscriptionFailure
 
     const row = [];
-    let isCurrentVisible = false, current = null, onShownHandler = null;
+    let isCurrentVisible = false, current = null, onShownHandler = null, onBlurHandler = null;
     const actionMap = new Map();
     const elementMap = new Map();
     const keyboardMap = new Map();
@@ -244,6 +244,17 @@ function menuGenerator (container) {
                 set(handler) { onShownHandler = handler; },                
                 enumerable: true,
                 configurable: false,    
+            }, //onShown
+            onBlur: {
+                get() { return onBlurHandler; },
+                set(handler) { onBlurHandler = handler; },                
+                enumerable: true,
+                configurable: false,    
+            }, //onShown
+            version: {
+                get() { return version; },
+                enumerable: false,
+                configurable: false,
             }, //onShown
         });
         this.toString = () => {
@@ -490,6 +501,7 @@ function menuGenerator (container) {
                 select(data.element, false);    
             }
                 else event.target.style.display = definitionSet.css.hide;
+            if (onBlurHandler) onBlurHandler();
         } //selectElement.onblur
     let optionIndex = 0, optionSize = 0;
         const optionHandler = event => {

@@ -33,6 +33,7 @@ window.onload = () => {
 
     const commandSets = createCommandSet();
     const commandSet = commandSets.commandSet;
+    commandSet.table = new Table(elements.main);
     const mainMenu = new menuGenerator(elements.mainMenu);
 
     const contextMenu = new menuGenerator(elements.contextMenu);
@@ -45,8 +46,11 @@ window.onload = () => {
             elements.errorElement.style.display = definitionSet.display.hide;
             elements.errorElement.style.textContent = null;
         }; //contextMenu.onShown
+        const onMenuBlur = () => setTimeout(() => commandSet.table.focus() );
         mainMenu.onShown = onMenuShown;
         contextMenu.onShown = onMenuShown;
+        mainMenu.onBlur = onMenuBlur;
+        contextMenu.onBlur = onMenuBlur;
     })(); //menu
 
     (() => { //context menu activation:
@@ -67,7 +71,6 @@ window.onload = () => {
     })(); //
     
     const summary = new Summary(elements);   
-    commandSet.table = new Table(elements.main);
 
     window.addEventListener(definitionSet.eventHandler.readOnlyEvent, () => {
         const value = commandSet.table.isReadOnly;
