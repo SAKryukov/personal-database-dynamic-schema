@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container) {
     
-    const version = "0.2.12";
+    const version = "0.2.14";
     if (!new.target) return version; 
 
     if (!container) return;
@@ -501,7 +501,8 @@ function menuGenerator (container) {
                 select(data.element, false);    
             }
                 else event.target.style.display = definitionSet.css.hide;
-            if (onBlurHandler) onBlurHandler();
+            if (onBlurHandler)
+                onBlurHandler(event);
         } //selectElement.onblur
     let optionIndex = 0, optionSize = 0;
         const optionHandler = event => {
