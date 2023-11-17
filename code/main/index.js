@@ -46,14 +46,11 @@ window.onload = () => {
             elements.errorElement.style.display = definitionSet.display.hide;
             elements.errorElement.style.textContent = null;
         }; //contextMenu.onShown
-        const onMenuBlur = event => {
-            if (event.relatedTarget instanceof HTMLSelectElement) return;
-            setTimeout( () => commandSet.table.focus() );
-        }; //onMenuBlur
+        const onMenuCancel = () => setTimeout( () => commandSet.table.focus() );
         mainMenu.onShown = onMenuShown;
-        mainMenu.onBlur = onMenuBlur;
+        mainMenu.onCancel = onMenuCancel;
         contextMenu.onShown = onMenuShown;
-        contextMenu.onBlur = onMenuBlur;
+        contextMenu.onCancel = onMenuCancel;
     })(); //menu
 
     (() => { //context menu activation:

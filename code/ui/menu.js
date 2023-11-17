@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container) {
     
-    const version = "0.2.14";
+    const version = "0.2.15";
     if (!new.target) return version; 
 
     if (!container) return;
@@ -107,7 +107,8 @@ function menuGenerator (container) {
     } //class MenuSubscriptionFailure
 
     const row = [];
-    let isCurrentVisible = false, current = null, onShownHandler = null, onBlurHandler = null;
+    let isCurrentVisible = false, current = null,
+        onShownHandler = null, onCancelHandler, onBlurHandler = null;
     const actionMap = new Map();
     const elementMap = new Map();
     const keyboardMap = new Map();
@@ -250,6 +251,11 @@ function menuGenerator (container) {
         onShown: {
             get() { return onShownHandler; },
             set(handler) { onShownHandler = handler; },
+            enumerable: true,
+        }, //onShown
+        onCancel: {
+            get() { return onCancelHandler; },
+            set(handler) { onCancelHandler = handler; },
             enumerable: true,
         }, //onShown
         onBlur: {
@@ -463,6 +469,7 @@ function menuGenerator (container) {
                         select(current, false);
                     reset();
                     event.preventDefault();
+                    onCancelHandler(event);
                     break;
                 case definitionSet.keyboard.enter:
                     const optionData = elementMap.get(event.target.options[event.target.selectedIndex]);

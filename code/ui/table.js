@@ -30,14 +30,19 @@ class Table {
     constructor(parent) {
         const rowCount = 1;
         const propertyCount = 1; //otherwise it will test the component
-    this.#parent = parent;
+        this.#parent = parent;
         this.#table = document.createElement(definitionSet.table.tableTag);
         const head = this.#table.createTHead();
         this.#headerRow = head.insertRow();
         this.#body = this.#table.createTBody();
         this.#hint = new Hint(parent, definitionSet.table.editingHint);
+        const onBlurHandle = event => {
+            if (event.target == this.#editingCell)
+                this.#stopEditing(event.target, true, false, true);
+        } //onBlurHandle
         for (let xIndex = -1; xIndex <= propertyCount; ++xIndex) {
             const cell = document.createElement(definitionSet.table.headerTag);
+            cell.onblur = onBlurHandle;
             this.#headerRow.appendChild(cell);
             if (xIndex >= 0 && xIndex < propertyCount)
                 cell.textContent = propertyCount == 1
@@ -56,6 +61,7 @@ class Table {
                     ? definitionSet.table.initialValue
                     : definitionSet.tableTest.cellText(rowIndex);
                 cell.onpointerdown = event => this.#select(event.target);
+                cell.onblur = onBlurHandle;
                 row.appendChild(cell);
             } //loop x
             const right = row.insertCell();
@@ -384,10 +390,16 @@ class Table {
             event.preventDefault();
             this.#stopEditing(cell, escape);
         } //cell.onkeydown
+        const range = document.createRange();
+        range.selectNodeContents(cell);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
     } //#editCell
-    #stopEditing(cell, cancel, isSelection) {
+    #stopEditing(cell, cancel, isSelection, noFocus) {
         this.#hint.show();
-        this.#table.focus();
+        if (!noFocus)
+            setTimeout(() => this.#table.focus());
         this.#editingCell = null;
         cell.contentEditable = false;
         if (cancel)
