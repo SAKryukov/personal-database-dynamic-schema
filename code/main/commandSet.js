@@ -126,9 +126,8 @@ const createCommandSet = () => {
             commandSet.table.fromClipboard();
         } catch (ex) { showException(ex); }
     });    
-
     
-    commandSet.set("F2: Edit Selected Cell", actionRequest => {
+    commandSet.set("Edit Selected Cell", actionRequest => {
         if (!actionRequest) return commandSet.table.canEditSelectedCell;
         if (commandSet.table.editingMode)
             setTimeout( () => { commandSet.table.commitEdit() });

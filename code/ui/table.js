@@ -159,7 +159,11 @@ class Table {
                 case definitionSet.keyboard.end:
                     this.#selectBottom(); break;
                 case definitionSet.keyboard.edit:
-                    this.editSelectedCell(); break;
+                    if (event.ctrlKey)
+                        this.editProperty();
+                    else
+                        this.editSelectedCell();
+                    break;
                 default: return;
             } //switch
             event.preventDefault(); 
@@ -263,8 +267,8 @@ class Table {
     } //#renumberRows
 
     get canRemoveRow() {
-        return !this.#isReadOnly && this.#selectedCell != null && this.#body.rows.length > 1;
-    } //canInsertRow
+        return !this.#isReadOnly && this.#selectedCell != null && this.#body.rows.length > 2;
+    } //canRemoveRow
     removeRow() {
         const cellIndex = this.#selectedCell.cellIndex;
         let rowIndex = this.#selectedCell.parentElement.rowIndex;
@@ -274,6 +278,7 @@ class Table {
             rowIndex = this.#body.rows.length;
         this.#select(this.#body.rows[rowIndex - 1].cells[cellIndex]);
         this.#notifyModified();
+        setTimeout(() => this.#table.focus());
     } //removeRow
 
     get canInsertRow() {
@@ -290,7 +295,10 @@ class Table {
                 cell.onpointerdown = event => this.#select(event.target);
         } //loop
         this.#renumberRows(rowIndex);
+        const newCell = row.cells[this.#selectedCell.cellIndex];
+        this.#select(newCell);
         this.#notifyModified();
+        setTimeout(() => this.#table.focus());
     } //insertRow
 
     get canAddProperty() { return !this.#isReadOnly; }
@@ -301,6 +309,10 @@ class Table {
         for (let rowIndex = 0; rowIndex < this.#body.rows.length; ++rowIndex)
             this.#body.rows[rowIndex].insertCell(index).onpointerdown = event => this.#select(event.target);
         this.#notifyModified();
+        const row = this.#selectedCell.parentElement;
+        const newCell = row.cells[row.cells.length - 2];
+        this.#select(newCell);
+        setTimeout(() => this.#table.focus());
     } //addProperty
 
     get canInsertProperty() {
@@ -314,6 +326,10 @@ class Table {
         for (let rowIndex = 0; rowIndex < this.#body.rows.length; ++rowIndex)
             this.#body.rows[rowIndex].insertCell(index + 1).onpointerdown = event => this.#select(event.target);
         this.#notifyModified();
+        const row = this.#selectedCell.parentElement;
+        const newCell = row.cells[this.#selectedCell.cellIndex - 1];
+        this.#select(newCell);
+        setTimeout(() => this.#table.focus());
     } //insertProperty
 
     canShuffleRow(up) {        
@@ -361,7 +377,7 @@ class Table {
     } //shuffleColumn
 
     get canRemoveProperty() {
-        return !this.#isReadOnly && this.#selectedCell != null && this.#headerRow.cells.length > 2;
+        return !this.#isReadOnly && this.#selectedCell != null && this.#headerRow.cells.length > 3;
     } //canRemoveProperty
     removeProperty() {
         let cellIndex = this.#selectedCell.cellIndex;
@@ -373,6 +389,7 @@ class Table {
             cellIndex = this.#headerRow.cells.length - 2;
         this.#select(this.#body.rows[rowIndex - 1].cells[cellIndex]);
         this.#notifyModified();
+        setTimeout(() => this.#table.focus());
     } //removeProperty
 
     #editCell(cell) {
