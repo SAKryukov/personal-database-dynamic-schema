@@ -190,12 +190,12 @@ class Table {
             } //switch
             event.preventDefault(); 
         }; //this.#table.onkeydown
-        document.body.oncopy = () => {
+        document.body.oncopy = () =>
             this.toClipboard();
-        } //document.body.oncopy
         document.body.onpaste = () => {
-            this.fromClipboard();   
-        } //document.body.onpaste
+            if (!this.#isReadOnly)
+                this.fromClipboard();   
+        }; //document.body.onpaste
         this.#setInitialSelection();
         this.#notifyReadonly = function() { window.dispatchEvent(this.#readOnlyEvent); }
         this.#notifyModified = function() { this.#modified = true; window.dispatchEvent(this.#modifiedEvent); }
@@ -532,12 +532,14 @@ class Table {
         }).catch(pasteException => {
             console.info(pasteException);
         });
+        setTimeout(() => this.#table.focus());
     } //fromClipboard
 
     get canCopyToClipboard() { return this.#selectedCell != null; }
     toClipboard() {
         if (this.#selectedCell == null) return;
         navigator.clipboard.writeText(definitionSet.stringCleanup.toWorld(this.#selectedCell.innerHTML));
+        setTimeout(() => this.#table.focus());
     } //toClipboard
 
     focus() {
