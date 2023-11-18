@@ -582,4 +582,6 @@ class Table {
     get isModified() { return this.#modified; }
     set isModified(value) { this.#modified = value; }
 
+    get selectedCell() { return this.#selectedCell; }
+
 } //class Table

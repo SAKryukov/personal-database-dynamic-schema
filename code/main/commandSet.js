@@ -143,6 +143,21 @@ const createCommandSet = () => {
             setTimeout( () => { commandSet.table.editProperty(); });
     });
 
+    commandSet.set("Load", actionRequest => {
+        const cell = commandSet.table.selectedCell;
+        if (!cell) return false;
+        const content = cell.textContent;
+        if (!content) return false;
+        if (!actionRequest) return 
+            (content.startsWith(definitionSet.URI.HTTP[0])
+            || content.startsWith(definitionSet.URI.HTTP[1]))
+        try {
+            window.open(content, definitionSet.URI.newTab);
+        } catch (exception) {
+            showException(exception);
+        } //exception
+    });
+
     commandSet.set("up", actionRequest => {
         if (!actionRequest) return commandSet.table.canShuffleRow(true);
         commandSet.table.shuffleRow(true)
@@ -173,11 +188,11 @@ const createCommandSet = () => {
     const aboutCommandSet = new Map();
     aboutCommandSet.set("About", actionRequest => {
         if (!actionRequest) return;
-        window.open("./metadata/about.html", "_blank");            
+        window.open("./metadata/about.html", definitionSet.URI.newTab);
     });
     aboutCommandSet.set("Source Code", actionRequest => {
         if (!actionRequest) return;
-        window.open("https://www.github.com/SAKryukov/personal-database-dynamic-schema", "_blank");            
+        window.open("https://www.github.com/SAKryukov/personal-database-dynamic-schema", definitionSet.URI.newTab);
     });
 
     return { commandSet, aboutCommandSet };

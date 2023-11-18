@@ -11,7 +11,7 @@ http://www.codeproject.com/Members/SAKryukov
 const definitionSet = {
 
     product: "Personal Database",
-    version: "2.9.16",
+    version: "2.9.17",
     years: "2017, 2023",
 
     productFormat: function() { return `${this.product} v.&thinsp;${this.version}`; },
@@ -58,6 +58,11 @@ const definitionSet = {
         hintTimeout: 4000,
     },
 
+    tableTest: {
+        headerText: index => `${index} name`,
+        cellText: index => `${index} data`,
+    },
+
     display: {
         hide: "none",
         errorElementShow: "block",
@@ -75,11 +80,6 @@ const definitionSet = {
         wrapJson: function(json) {
             return `const ${this.dataFunctionName()}=()=>` + "`" + json + "`;";
         },
-    },
-
-    tableTest: {
-        headerText: index => `${index} name`,
-        cellText: index => `${index} data`,
     },
 
     exceptions: {
@@ -152,6 +152,11 @@ const definitionSet = {
         toHtml: value => value.trim().replace(/(\r\n|\n|\r)/gm, "<br>"),
         toWorld: value => value.replace(/<br[\s]*\/*>/gm, "\n").trim(),
         fixAndTrim: function(value) { return this.toHtml(this.toWorld(value)).replaceAll("\"", "&quot;").replaceAll("`", "&grave;"); },
+    },
+
+    URI: {
+        HTTP: ["https://", "http://"],
+        newTab: "_blank",
     },
 
     initialize: function() {
