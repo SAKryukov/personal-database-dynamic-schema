@@ -143,20 +143,17 @@ const createCommandSet = () => {
             setTimeout( () => { commandSet.table.editProperty(); });
     });
 
-    commandSet.set("Load", actionRequest => {
-        const cell = commandSet.table.selectedCell;
-        if (!cell) return false;
-        const content = cell.textContent;
-        if (!content) return false;
-        if (!actionRequest) return 
-            (content.startsWith(definitionSet.URI.HTTP[0])
-            || content.startsWith(definitionSet.URI.HTTP[1]))
+    const loadWebPage = (actionRequest) => {
+        const uri = commandSet.table.selectedUri;
+        if (!actionRequest) return !!uri;
+        if (!uri) return false;
         try {
-            window.open(content, definitionSet.URI.newTab);
+            window.open(uri, definitionSet.URI.newTab);
         } catch (exception) {
             showException(exception);
         } //exception
-    });
+    } //loadWebPage
+    commandSet.set("Load", loadWebPage);
 
     commandSet.set("up", actionRequest => {
         if (!actionRequest) return commandSet.table.canShuffleRow(true);
@@ -195,6 +192,6 @@ const createCommandSet = () => {
         window.open("https://www.github.com/SAKryukov/personal-database-dynamic-schema", definitionSet.URI.newTab);
     });
 
-    return { commandSet, aboutCommandSet };
+    return { commandSet, aboutCommandSet, doubleClickHandler: loadWebPage };
 
 };

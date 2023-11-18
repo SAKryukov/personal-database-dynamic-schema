@@ -30,7 +30,11 @@ td, th { white-space: nowrap; }
 textarea { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
 table:not(:focus) td:not(.select) { background-color: hsl(0, 0%, 90%); }
 td:first-child, td:last-child { background-color: lightgray; text-align: right; }
+/* keep .select and URI in sync with definitionSet.CSS.select and definitionSet.CSS.URI: */
 td.select { background-color: steelBlue; color: white; }
+td.URI:not(:focus) { text-decoration: underline; }
+td.URI:not(.select):not(:focus) { color: darkblue; }
+td.URI.select:not(:focus) { color: yellow; }
 td.found { outline: 6px solid orange; outline-offset: -3px; }
 td:focus, th:focus { background-color: white; color: navy; outline: none; }
 table:not(:focus) td:not(:focus).select { opacity: 50%; }

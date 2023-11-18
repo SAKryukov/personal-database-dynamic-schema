@@ -34,6 +34,7 @@ window.onload = () => {
     const commandSets = createCommandSet();
     const commandSet = commandSets.commandSet;
     commandSet.table = new Table(elements.main);
+    commandSet.table.doubleClickHandler = commandSets.doubleClickHandler;
     const mainMenu = new menuGenerator(elements.mainMenu);
 
     const contextMenu = new menuGenerator(elements.contextMenu);

@@ -11,7 +11,7 @@ http://www.codeproject.com/Members/SAKryukov
 const definitionSet = {
 
     product: "Personal Database",
-    version: "2.9.17",
+    version: "2.9.18",
     years: "2017, 2023",
 
     productFormat: function() { return `${this.product} v.&thinsp;${this.version}`; },
@@ -85,6 +85,7 @@ const definitionSet = {
     CSS: {
         found: "found",
         selection: "select",
+        URI: "URI",
         buttonUp: "up",
         buttonDown: "down",
         scopeSelector: childrenSelector => `:scope ${childrenSelector}`,

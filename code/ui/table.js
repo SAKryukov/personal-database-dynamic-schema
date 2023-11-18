@@ -26,6 +26,8 @@ class Table {
     #notifyModified = null;
     #hint = null;
     #doubleClickHandler = null;
+    #getUri = null;
+    #setupUri = null;
     #modified = false;
 
     constructor(parent) {
@@ -68,6 +70,23 @@ class Table {
             const right = row.insertCell();
             right.textContent = rowIndex + 1;
         } //loop row
+        this.#getUri = cell => {
+            if (!cell) return null;
+            const content = cell.textContent;
+            if (!content) return null;
+            if (content.startsWith(definitionSet.URI.HTTP[0]) || content.startsWith(definitionSet.URI.HTTP[1]))
+                return content;
+        } //this.#getUri
+        this.#setupUri = cell => {
+            const uri = this.#getUri(cell);
+            cell.ondblclick = uri != null && this.#doubleClickHandler == null
+                ? null
+                : event => this.#doubleClickHandler(event);
+            if (uri == null)
+                cell.classList.remove(definitionSet.CSS.URI);
+            else
+                cell.classList.add(definitionSet.CSS.URI);
+        }; //this.#setupUri
         this.#fromData = data => {
             const propertyCount = data.properties.length;
             while (this.#body.rows.length > 0)
@@ -91,7 +110,8 @@ class Table {
                 for (let factIndex = 0; factIndex < data.records[rowIndex].length; ++factIndex) {
                     const fact = data.records[rowIndex][factIndex];
                     const cell = this.#body.rows[rowIndex].cells[fact.property + 1];
-                    cell.innerHTML = data.values[fact.value];   
+                    cell.innerHTML = data.values[fact.value];
+                    this.#setupUri(cell);
                 } //loop
                 const right = row.insertCell();
                 right.textContent = rowIndex + 1;        
@@ -421,10 +441,11 @@ class Table {
             setTimeout(() => this.#table.focus());
         this.#editingCell = null;
         cell.contentEditable = false;
-        if (cancel)
-            cell.innerHTML = this.#savedCellData;
-        else
+        if (!cancel)
             this.#addRowOnEdit(cell);
+        else
+            cell.innerHTML = this.#savedCellData;
+        this.#setupUri(cell);
         if (!cancel && !isSelection)
             this.#notifyModified();
     } //stopEditing
@@ -585,14 +606,7 @@ class Table {
     set isModified(value) { this.#modified = value; }
 
     get selectedCell() { return this.#selectedCell; }
-    get selectedUri() {
-        if (!this.#selectedCell) return null;
-        const content = this.#selectedCell.textContent;
-        if (!content) return null;
-        if (!content.startsWith(definitionSet.URI.HTTP[0]) && !content.startsWith(definitionSet.URI.HTTP[1]))
-            return null;
-        return content;
-    } //isUriCell
+    get selectedUri() { return this.#getUri(this.#selectedCell); }
     
     get doubleClickHandler() { return this.#doubleClickHandler; }
     set doubleClickHandler(handler) { this.#doubleClickHandler = handler; }
