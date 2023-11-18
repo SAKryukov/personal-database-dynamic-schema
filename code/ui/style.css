@@ -1,14 +1,29 @@
 :root {
-    --deltaX: 2em;
-    --margin-Y: 0.3em;
     --padding: 0.3em 1em 0.3em 1em;
     --padding-option: 0.12em 1.4em 0.12em 1.4em;
-    --padding-button: 1px 1.4em 1px 1.4em;
     --padding-horizontal: 0.2em 1em 0.2em 1em;
-    --margin-X-small: 0.3em;
+    --color-border: gray;
+    --color-error: red;
+    --color-modified: red;
+    --color-hint-border: hsl(210, 30%, 50%, 100%);
+    --color-hint-text: hsl(210, 30%, 50%, 100%);
+    --color-hint-background: hsl(210, 100%, 97%, 100%);
+    --color-cell-headers: lightgray;
+    --color-cell-focus-background: white;
+    --color-cell-selection-text: white;
+    --color-cell-selection-background: hsl(207, 44%, 40%, 100%);
+    --color-cell-selection-text-URI: hsl(34, 100%, 80%, 100%);
+    --color-cell-editing: navy;
+    --color-text-URI: darkBlue;
+    --color-border-found: rgb(255, 200, 0);
+    --color-two-state-button-up: white;
+    --color-two-state-button-down: lightgray;
+    --color-menu-header-text: black;
+    --color-menu-header-background-selected: lightgray;
+    --color-menu-option-disabled: black;
 }
 * { font-family: sans-serif; user-select: none; }
-#error { display: block; color:red; }
+#error { display: block; color: var(--color-error); }
 select { display: none; }
 /* flex: */
 * { padding: 0; margin: 0; box-sizing: border-box; }
@@ -17,31 +32,29 @@ body { display: flex; flex-flow: column; height: 100%; }
 main { flex: auto; overflow: auto; }
 /* end flex */
 header { border: none; }
-menu { border-bottom: 1px solid black; }
 th { position: sticky; top: 0; }
-th {  box-shadow: inset 1px 1px black, 0 1px black; }
-table, td, th { box-shadow: inset 1px -1px black; }
-table { margin-left: -1px; border: none; border-right: solid 1px black; outline: none; }
+table, td, th { box-shadow: inset 1px -1px var(--color-border); }
+table { margin-left: -1px; border: none; border-right: solid 1px var(--color-border); outline: none; }
 table { border-collapse: collapse; }
 pre, td, th { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
 td { vertical-align: top; }
-th { background-color: lightgray; }
+th { background-color: var(--color-cell-headers); }
 td, th { white-space: nowrap; }
 textarea { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
-table:not(:focus) td:not(.select) { background-color: hsl(0, 0%, 90%); }
-td:first-child, td:last-child { background-color: lightgray; text-align: right; }
+table:not(:focus) td:not(.select) { background-color: hsl(0, 0%, 95%); }
+td:first-child, td:last-child { background-color: var(--color-cell-headers); text-align: right; }
 /* keep .select and URI in sync with definitionSet.CSS.select and definitionSet.CSS.URI: */
-td.select { background-color: steelBlue; color: white; }
-td.URI:not(:focus) { text-decoration: underline; }
-td.URI:not(.select):not(:focus) { color: darkblue; }
-td.URI.select:not(:focus) { color: yellow; }
-td.found { outline: 6px solid orange; outline-offset: -3px; }
-td:focus, th:focus { background-color: white; color: navy; outline: none; }
+td.select { background-color: var(--color-cell-selection-background); color: var(--color-cell-selection-text); }
+td.URI:not(:focus) { text-decoration: underline; cursor: pointer; }
+td.URI:not(.select):not(:focus) { color: var(--color-text-URI); }
+td.URI.select:not(:focus) { color: var(--color-cell-selection-text-URI); }
+td.found { outline: 6px solid var(--color-border-found); outline-offset: -3px; }
+td:focus, th:focus { background-color: var(--color-cell-focus-background); color: var(--color-cell-editing); outline: none; }
 table:not(:focus) td:not(:focus).select { opacity: 50%; }
-cite {
-    background-color: aliceblue;border: solid 0.4px gray; color: gray; border-radius: 0.3em;
+cite { /* hint */
+    background-color: var(--color-hint-background); border: solid 0.4px var(--color-hint-border); border-radius: 0.3em;
     padding: var(--padding-horizontal);
-    color: gray; font-size: 80%; font-weight: 100; font-style: normal;
+    color: var(--color-hint-text); font-size: 80%; font-style: normal;
 }
 /* footer */
 footer > * { display: inline-block; vertical-align: middle; }
@@ -54,29 +67,29 @@ footer details section p b { display: table-cell; padding-left: 1em; font-weight
 footer details section p:first-child b { padding-top: 0.2em; }
 footer summary { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
 #read-only, #modified { padding-left: 1em; font-weight:bold; }
-#modified { color: red; }
+#modified { color: var(--color-modified); }
 footer section { margin-left: 1em; }
 footer section input { padding-left: 1em; padding-right: 1em; }
-footer section button, footer section input { outline: none; border: solid thin gray; height: 2.2em; }
+footer section button, footer section input { outline: none; border: solid thin var(--color-border); height: 2.2em; }
 footer section button { width: 2.2em; }
 footer section button:not(:last-of-type) { border-left-width: 0px; }
-footer button.up { background-color: white; }
-footer button.down  { background-color: lightgray; }
-footer { border-top: 1px solid gray; }
+footer button.up { background-color: var(--color-two-state-button-up); }
+footer button.down  { background-color: var(--color-two-state-button-down); }
+footer { border-top: 1px solid var(--color-border); }
 /* menu */
-body > header { border-bottom: 1px solid gray; }
+body > header { border-bottom: 1px solid var(--color-border); }
 header menu { border: none; outline: none; width: 100%; }
 header menu li { display: inline; }
 header menu header { padding: var(--padding); }
 header menu { display: flex; flex-direction: row; }
 header menu li:last-of-type { margin-left: auto; right: 4px; }
 header menu li:last-of-type select { right: 4px; }
-header menu header.selected { background-color: lightgrey; color: black; }
+header menu header.selected { background-color: var(--color-menu-header-background-selected); color: var(--color-menu-header-text); }
 select { overflow-y: auto; font-size: 100%; display: none; }
 header menu li:first-of-type select { left: 4px; }
 option, optgroup { padding: var(--padding-option); font-weight: normal; }
 optgroup { margin-left: 1em; }
 optgroup option { padding-left: 2em; }
-option:disabled { color: black; opacity: 0.3; }
-option.separator { padding: 0; opacity: 1; color: gray; }
-select { display: none; border: none; outline: 1.4px solid gray; }
+option:disabled { color: var(--color-menu-option-disabled); opacity: 0.3; }
+option.separator { padding: 0; opacity: 1; color: var(--color-border) }
+select { display: none; border: none; outline: 1.4px solid var(--color-border) }
