@@ -17,7 +17,7 @@ const createCommandSet = () => {
     const showException = exception => {
         document.title = definitionSet.titleFormat();
         commandSet.errorElement.textContent = exception.toString();
-        commandSet.errorElement.style.display = definitionSet.display.errorElementShow;
+        commandSet.errorElement.style.display = null;
     }; //showException
 
     const fileIO = createFileIO(showException);
@@ -81,12 +81,12 @@ const createCommandSet = () => {
     }; //implementSave
 
     commandSet.set("Save", actionRequest => {
-        if (!actionRequest) return commandSet.table.canStore;
+        if (!actionRequest) return commandSet.table.canStore; //SA???
         implementSave(false);
     });
 
     commandSet.set("SaveAs", actionRequest => {
-        if (!actionRequest) return commandSet.table.canStore;
+        if (!actionRequest) return;
         implementSave(true);
     });
 

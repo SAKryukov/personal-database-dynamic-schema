@@ -21,16 +21,16 @@ const Hint = function (parent, textOrTarget) {
 
     const element = document.createElement(definitionSet.table.hint);
     element.textContent = text;
-    element.style.visibility = definitionSet.CSS.visibility.hidden;
-    element.style.position = definitionSet.CSS.display.hint;
+    element.style.display = definitionSet.CSS.display.none;
+    element.style.position = definitionSet.CSS.position.hint;
     element.style.zIndex = Number.MAX_SAFE_INTEGER;
     parent.appendChild(element);
 
     const show = function (currentTarget, remove) {
         if (!currentTarget) currentTarget = textOrTarget;
-        element.style.visibility = remove
-            ? definitionSet.CSS.visibility.hidden
-            : definitionSet.CSS.visibility.visible;
+        element.style.display = remove
+            ? definitionSet.CSS.display.none
+            : null;
         if (!remove) {
             const rectangle = currentTarget.getBoundingClientRect();
             element.style.top = definitionSet.CSS.coordinate(

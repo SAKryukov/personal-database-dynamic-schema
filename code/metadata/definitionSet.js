@@ -63,11 +63,6 @@ const definitionSet = {
         cellText: index => `${index} data`,
     },
 
-    display: {
-        hide: "none",
-        errorElementShow: "block",
-    },
-
     scripting: {
         script: "script",
         dataFunctionName: () => { const SAPersonalDatabase = () => null; return SAPersonalDatabase.name; },
@@ -101,6 +96,8 @@ const definitionSet = {
         display: {
             none: "none",
             button: "inline",
+        },
+        position: {
             hint: "absolute",
         },
     },

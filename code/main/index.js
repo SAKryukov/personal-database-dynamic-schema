@@ -43,7 +43,7 @@ window.onload = () => {
         mainMenu.subscribe(commandSets.aboutCommandSet);
         contextMenu.subscribe(commandSet);
         const onMenuShown = () => {
-            elements.errorElement.style.display = definitionSet.display.hide;
+            elements.errorElement.style.display = definitionSet.CSS.display.none;
             elements.errorElement.style.textContent = null;
         }; //contextMenu.onShown
         const onMenuCancel = () => setTimeout( () => commandSet.table.focus() );
@@ -100,7 +100,8 @@ window.onload = () => {
         const data = JSON.parse(SAPersonalDatabase());
         commandSet.table.load(data);
         summary.populate(data);
-        document.title = definitionSet.titleFormat(data.summary.title);
+        if (data.summary)
+            document.title = definitionSet.titleFormat(data.summary.title);
         commandSet.table.isReadOnly = true;
     } //if
     commandSet.table.focus();

@@ -28,7 +28,6 @@ td { vertical-align: top; }
 th { background-color: lightgray; }
 td, th { white-space: nowrap; }
 textarea { padding: 1em; padding-top: 0.2em; padding-bottom: 0.2em; }
-color: gray; /* se font-style:  and focus: keep .select in sync with definitionSet.CSS: */
 table:not(:focus) td:not(.select) { background-color: hsl(0, 0%, 90%); }
 td:first-child, td:last-child { background-color: lightgray; text-align: right; }
 td.select { background-color: steelBlue; color: white; }
