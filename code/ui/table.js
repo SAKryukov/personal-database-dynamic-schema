@@ -25,6 +25,7 @@ class Table {
     #notifyReadonly = null;
     #notifyModified = null;
     #hint = null;
+    #doubleClickHandler = null;
     #modified = false;
 
     constructor(parent) {
@@ -95,6 +96,8 @@ class Table {
                 const right = row.insertCell();
                 right.textContent = rowIndex + 1;        
             } //loop row
+            if (data.records && (data.records.length < 1 || data.records[data.records.length - 1].length > 0))
+                this.#addRow();
             this.#setInitialSelection();
         } //this.#fromData
         this.#addRow = () => {
@@ -106,7 +109,6 @@ class Table {
             for (let xIndex = 0; xIndex < propertyCount; ++xIndex) {
                 const cell = row.insertCell(1);
                 cell.onpointerdown = event => this.#select(event.target);
-                row.appendChild(cell);
             } //loop x
             const right = row.insertCell();
             right.textContent = rowIndex + 1;
@@ -583,5 +585,16 @@ class Table {
     set isModified(value) { this.#modified = value; }
 
     get selectedCell() { return this.#selectedCell; }
+    get selectedUri() {
+        if (!this.#selectedCell) return null;
+        const content = this.#selectedCell.textContent;
+        if (!content) return null;
+        if (!content.startsWith(definitionSet.URI.HTTP[0]) && !content.startsWith(definitionSet.URI.HTTP[1]))
+            return null;
+        return content;
+    } //isUriCell
+    
+    get doubleClickHandler() { return this.#doubleClickHandler; }
+    set doubleClickHandler(handler) { this.#doubleClickHandler = handler; }
 
 } //class Table
