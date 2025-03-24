@@ -10,6 +10,11 @@ http://www.codeproject.com/Members/SAKryukov
 
 const createFileIO = showException => {
 
+    const localDefinitionSet = {
+        defaultLocation: "downloads",
+        nonHandledExceptionName: "AbortError",
+    }; //localDefinitionSet
+
     const experimentalImplementation = window.showOpenFilePicker && window.showSaveFilePicker;
     const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
     const notifyStored = () => window.dispatchEvent(storedEvent);
@@ -30,9 +35,9 @@ const createFileIO = showException => {
     const storeFileFallback = (fileName, content) => {
         const link = document.createElement('a');
         link.href = `data:application/javascript;charset=utf-8,${encodeURIComponent(content)}`; //sic!
-        link.download = this.previouslyOpenedFilename == null
+        link.download = previouslyOpenedFilename == null
             ? fileName
-            : this.previouslyOpenedFilename;
+            : previouslyOpenedFilename;
         link.click();
         notifyStored(); //can be false-positive, because it is not known if download was successful or not
     }; //storeFileFallback
@@ -66,7 +71,7 @@ const createFileIO = showException => {
 
     const createOptions = fileType => { return {
             types: [fileType],
-            startIn: fileHandleSave ?? fileHandleOpen,
+            startIn: fileHandleSave ?? fileHandleOpen ?? localDefinitionSet.defaultLocation,
         };
     }; //createOptions
     const saveFileWithHandle = (handle, content) => {
