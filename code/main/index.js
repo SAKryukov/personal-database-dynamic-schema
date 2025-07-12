@@ -26,6 +26,8 @@ const commandLineParameter = (commandLine => {
 
 window.onload = () => {
 
+    fixAccessKeyAttributes();
+
     const elements = getElements();
 
     elements.product.innerHTML = definitionSet.productFormat();

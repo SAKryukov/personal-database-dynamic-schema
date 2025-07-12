@@ -13,6 +13,7 @@ http://www.codeproject.com/Members/SAKryukov
         <script src="metadata/definitionSet.js"></script>
         <script src="ui/file-io.js"></script>
         <script src="ui/hint.js"></script>
+        <script src="ui/accesskey.js"></script>
         <script src="ui/two-state-button.js"></script>
         <script src="ui/menu.js"></script>
         <script src="ui/modal-popup.js"></script>
@@ -23,10 +24,8 @@ http://www.codeproject.com/Members/SAKryukov
         <script src="main/elements.js"></script>
         <script src="main/index.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!--
-        <link rel="icon" type="image/svg+xml" href="./images/sadb.png">
-        <link rel="mask-icon" href="./images/sadb.png" color="transparent">
-        -->
+        <link rel="icon" type="image/svg+xml" href="./images/sadb.svg">
+        <link rel="mask-icon" href="./images/sadb.svg" color="transparent">
         <style>
             @import url(ui/style.css);
         </style>
@@ -108,7 +107,9 @@ http://www.codeproject.com/Members/SAKryukov
         <p id="product"></p>
         <p id="read-only">Read-only</p>
         <p id="modified" title="Modified"></p>
-        <details><summary accesskey="U">S<u>u</u>mmary</summary>
+
+        <details><summary accesskey="KeyU">S<u>u</u>mmary</summary>
+        <!-- accesskey attributes are removed by script here and elsewhere -->
             <section>
                 <p><b>Title</b><b><input id="summary-title" /></b></p>
                 <p><b>Created</b><b id="summary-created"></b></p>    
@@ -117,7 +118,7 @@ http://www.codeproject.com/Members/SAKryukov
             </section>
         </details>
         <section>
-            <p><label accesskey="F" for="search"><u>F</u>ind
+            <p><label accesskey="KeyN" for="search">Fi<u>n</u>d
                 <input id="search" title="Search pattern, press Enter to find"/></label><button id="search-match-case" title="Match case">Αα</button><button id="search-whole-word" title="Match whole word">| |</button><button id="search-regexp" title="Use regular expression"><small>✶</small></button>
                 <span id="search-results"></span>
                 <button id="search-next" title="Find next">F3</button>
