@@ -157,6 +157,22 @@ const definitionSet = {
         newTab: "_blank",
     },
 
+    html: {
+        escape: original =>
+            original.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;'),
+        unescape: escapedForm =>
+            escapedForm.replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&apos;/g, "'"),
+    }, //html
+
     initialize: function() {
         const freezeObject = object => {
             for (let index in object) {
