@@ -95,17 +95,36 @@ window.onload = () => {
         } else // to guarantee unconditional unload
             delete (event.returnValue);
     };
-    
+
+    const showPreloadException = (message, fileName) =>
+            modalPopup.show(
+                definitionSet.persistence.formatPersistenceErrorMessage(message, fileName),
+                [],
+                definitionSet.eventHandler.dataModifiedRequestStyles,
+                null, // handler for the end of "modal" state
+                this.table // element to finally focus
+            );
+
     commandSet.table.isReadOnly = false;
-    if (commandLineParameter && typeof SAPersonalDatabase != typeof undefined) {
-        if (SAPersonalDatabase.name != definitionSet.scripting.dataFunctionName())
-            definitionSet.scripting.alert();
-        const data = JSON.parse(SAPersonalDatabase());
-        commandSet.table.load(data);
-        summary.populate(data);
-        if (data.summary)
-            document.title = definitionSet.titleFormat(data.summary.title);
-        commandSet.table.isReadOnly = true;
+    if (commandLineParameter) {
+        try {
+            if (typeof SAPersonalDatabase == typeof undefined) {
+                showPreloadException(definitionSet.scripting.invalidDatabase, commandLineParameter);
+                return;
+            } else if (!(SAPersonalDatabase instanceof Function)) {
+                showPreloadException(definitionSet.scripting.invalidDatabaseNoFunction(), commandLineParameter);
+                return;
+            } //if
+            const json = definitionSet.persistence.stringToJsonString(SAPersonalDatabase());
+            const data = JSON.parse(json);
+            commandSet.table.load(data);
+            summary.populate(data);
+            if (data.summary)
+                document.title = definitionSet.titleFormat(data.summary.title);
+            commandSet.table.isReadOnly = true;
+        } catch (e) {
+            showPreloadException(e.toString(), commandLineParameter);
+        } //exception
     } //if
     commandSet.table.focus();
 

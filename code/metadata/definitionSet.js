@@ -66,7 +66,6 @@ const definitionSet = {
     scripting: {
         script: "script",
         dataFunctionName: () => { const SAPersonalDatabase = () => null; return SAPersonalDatabase.name; },
-        alert: function() { alert(`Scripting system broke, invalid name:\n${this.dataFunctionName()}`) },
         extractJson: text => (text.trim().endsWith("`;") || text.trim().endsWith("`"))
             ? text.substring(
                 text.indexOf("`") + 1, 
@@ -75,6 +74,10 @@ const definitionSet = {
         wrapJson: function(json) {
             return `const ${this.dataFunctionName()}=()=>` + "`" + json + "`;";
         },
+        invalidDatabase: "Invalid database",
+        invalidDatabaseNoFunction: function() {
+            return `Invalid database; a database should define the function ${this.dataFunctionName()}()`;
+        }, //invalidDatabaseNoFunction
     },
 
     exceptions: {
@@ -146,32 +149,46 @@ const definitionSet = {
         },
     },
 
-    stringCleanup: {
-        toHtml: value => value.trim().replace(/(\r\n|\n|\r)/gm, "<br>"),
-        toWorld: value => value.replace(/<br[\s]*\/*>/gm, "\n").trim(),
-        fixAndTrim: function(value) { return this.toHtml(this.toWorld(value)).replaceAll("\"", "&quot;").replaceAll("`", "&grave;"); },
-    },
+    persistence: {
+        toText: element => {
+            if (element.innerHTML.includes("<br")) {
+                const lines = element.innerHTML.split("<br>");
+                const result = [];
+                for (let line of lines) {
+                    const node = document.createElement("p");
+                    node.innerHTML = line;
+                    result.push(node.textContent);
+                } //loop
+                return result.join("\n");
+            } else
+                return element.textContent; 
+        }, //toText
+        fromText: (element, data) => {
+            if (data.includes("\n")) {
+                element.textContent = "";
+                const lines = data.split("\n");
+                let lineNumber = 0;
+                for (let line of lines) {
+                    const node = document.createTextNode(line);
+                    node.textContent = line;
+                    element.appendChild(node);
+                    if (lineNumber < lines.length - 1)
+                        element.appendChild(document.createElement("br"));
+                    lineNumber++;
+                } //loop
+            } else
+                element.textContent = data;    
+        }, //fromText
+        stringToJsonString: value =>
+            value.replaceAll("\n", "\\n"),
+        formatPersistenceErrorMessage: (message, fileName) =>
+            `<p>${message}</p><br/><p>Script: ${String.fromCodePoint(0x201c)}${fileName}${String.fromCodePoint(0x201d)}</p>`,
+    }, //persistence
 
     URI: {
         HTTP: ["https://", "http://"],
         newTab: "_blank",
     },
-
-    html: {
-        escape: original =>
-            original.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&apos;'),
-        unescape: escapedForm =>
-            escapedForm.replace(/&amp;/g, '&')
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"')
-            .replace(/&#39;/g, "'")
-            .replace(/&apos;/g, "'"),
-    }, //html
 
     initialize: function() {
         const freezeObject = object => {

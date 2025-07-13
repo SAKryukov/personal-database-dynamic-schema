@@ -110,7 +110,8 @@ class Table {
                 for (let factIndex = 0; factIndex < data.records[rowIndex].length; ++factIndex) {
                     const fact = data.records[rowIndex][factIndex];
                     const cell = this.#body.rows[rowIndex].cells[fact.property + 1];
-                    cell.innerHTML = data.values[fact.value];
+                    //cell.textContent = data.values[fact.value]; //SA??? from data
+                    definitionSet.persistence.fromText(cell, data.values[fact.value]);
                     this.#setupUri(cell);
                 } //loop
                 const right = row.insertCell();
@@ -486,7 +487,8 @@ class Table {
         const properties = [];
         for (let cell of this.#headerRow.cells) {
             if (cell.cellIndex <= 0 || cell.cellIndex >= this.#headerRow.cells.length - 1) continue;
-            properties.push(cell.textContent);
+            //SA??? store
+            properties.push(definitionSet.persistence.toText(cell));
         } //loop
         const values = [];
         const records = [];
@@ -506,7 +508,7 @@ class Table {
             const record = [];
             for (let cell of row.cells) {
                 if (cell.cellIndex <= 0 || cell.cellIndex >= this.#headerRow.cells.length - 1) continue;
-                const value = definitionSet.stringCleanup.fixAndTrim(cell.innerHTML);
+                const value = definitionSet.persistence.toText(cell); //SA??? store
                 if (value == null || value.length < 1)
                     continue;
                 let valueIndex = valueMap.get(value);
@@ -526,7 +528,8 @@ class Table {
     fromClipboard() {
         if (this.#selectedCell == null) return;
         navigator.clipboard.readText().then(value => {
-            this.#selectedCell.innerHTML = definitionSet.stringCleanup.toHtml(value);
+            //this.#selectedCell.textContent = value; //SA??? from clipboard
+            definitionSet.persistence.fromText(this.#selectedCell, value);
             this.#addRowOnEdit(this.#selectedCell);
             this.#notifyModified();
         }).catch(pasteException => {
@@ -538,7 +541,8 @@ class Table {
     get canCopyToClipboard() { return this.#selectedCell != null; }
     toClipboard() {
         if (this.#selectedCell == null) return;
-        navigator.clipboard.writeText(definitionSet.stringCleanup.toWorld(this.#selectedCell.innerHTML));
+        //navigator.clipboard.writeText(this.#selectedCell.textContent); //SA??? to clipboard
+        navigator.clipboard.writeText(definitionSet.persistence.toText(this.#selectedCell));
         setTimeout(() => this.#table.focus());
     } //toClipboard
 
@@ -547,7 +551,7 @@ class Table {
     } //focus
 
     find(pattern, matchCase, wholeWord, isRegexp) {
-        const escapeAll = text => text; //SA???
+        const escapeAll = text => text;
         const createRegexp = (pattern, matchCase, wholeWord, isRegexp) => {
             if (isRegexp || wholeWord) {
                 if (isRegexp)
