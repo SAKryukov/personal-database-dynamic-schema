@@ -11,7 +11,7 @@ http://www.codeproject.com/Members/SAKryukov
 const definitionSet = {
 
     product: "Personal Database",
-    version: "2.9.20",
+    version: "2.10.0",
     years: "2017, 2023, 2025",
 
     productFormat: function() { return `${this.product} v.&thinsp;${this.version}`; },
