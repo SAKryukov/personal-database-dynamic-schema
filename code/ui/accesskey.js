@@ -33,6 +33,11 @@ const fixAccessKeyAttributes = (altKey = true, shiftKey = false, ctrlKey = false
     const eventMap = new Map();
     const elements = document.querySelectorAll(`[${definitionSet.accesskey}]`);
 
+    const isClickable = element =>
+        element instanceof HTMLButtonElement ||
+        // is <summary>:
+        (element.parentElement && element.parentElement instanceof HTMLDetailsElement);
+
     for (let element of elements) {
         const key = element.getAttribute(definitionSet.accesskey);
         let action = element => element.focus();
@@ -43,7 +48,7 @@ const fixAccessKeyAttributes = (altKey = true, shiftKey = false, ctrlKey = false
                 action = element => element.checked = !element.checked;
             else if (definitionSet.clickTypes.has(element.type) && element.click)
                 action = element => element.click();
-        } else if (element instanceof HTMLButtonElement)
+        } else if (isClickable(element))
             action = element => element.click();
         eventMap.set(key, { element, action });
         element.removeAttribute(definitionSet.accesskey);
