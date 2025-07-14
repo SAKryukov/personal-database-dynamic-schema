@@ -1,7 +1,7 @@
 ﻿/*
 Personal Database
 
-Copyright (c) 2017, 2023 by Sergey A Kryukov
+Copyright (c) 2017, 2023, 2025 by Sergey A Kryukov
 http://www.SAKryukov.org
 http://www.codeproject.com/Members/SAKryukov
 */
@@ -11,7 +11,7 @@ http://www.codeproject.com/Members/SAKryukov
 const definitionSet = {
 
     product: "Personal Database",
-    version: "2.10.0",
+    version: "3.0.0",
     years: "2017, 2023, 2025",
 
     productFormat: function() { return `${this.product} v.&thinsp;${this.version}`; },
@@ -66,18 +66,13 @@ const definitionSet = {
     scripting: {
         script: "script",
         dataFunctionName: () => { const SAPersonalDatabase = () => null; return SAPersonalDatabase.name; },
-        extractJson: text => (text.trim().endsWith("`;") || text.trim().endsWith("`"))
-            ? text.substring(
-                text.indexOf("`") + 1, 
-                text.lastIndexOf("`"))
-            : text,
+        extractJson: text =>
+            text.substring(
+                text.indexOf("{"), text.length - 1).trim(),
         wrapJson: function(json) {
-            return `const ${this.dataFunctionName()}=()=>` + "`" + json + "`;";
+            return `const ${this.dataFunctionName()}=()=>${json};`;
         },
         invalidDatabase: "Invalid database",
-        invalidDatabaseNoFunction: function() {
-            return `Invalid database; a database should define the function ${this.dataFunctionName()}()`;
-        }, //invalidDatabaseNoFunction
     },
 
     exceptions: {
@@ -179,8 +174,6 @@ const definitionSet = {
             } else
                 element.textContent = data;    
         }, //fromText
-        stringToJsonString: value =>
-            value.replaceAll("\n", "\\n"),
         formatPersistenceErrorMessage: (message, fileName) =>
             `<p>${message}</p><br/><p>Script: ${String.fromCodePoint(0x201c)}${fileName}${String.fromCodePoint(0x201d)}</p>`,
     }, //persistence

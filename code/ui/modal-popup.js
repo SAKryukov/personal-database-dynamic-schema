@@ -4,7 +4,7 @@ Modal Popup
 
 v.3.0
 
-Copyright (c) 2015, 2017, 2019, 2023 by Sergey A Kryukov
+Copyright (c) 2015, 2017, 2019, 2023, 2025 by Sergey A Kryukov
 http://www.SAKryukov.org
 http://www.codeproject.com/Members/SAKryukov
 

@@ -1,7 +1,7 @@
 /*
 Personal Database
 
-Copyright (c) 2017, 2023 by Sergey A Kryukov
+Copyright (c) 2017, 2023, 2025 by Sergey A Kryukov
 http://www.SAKryukov.org
 http://www.codeproject.com/Members/SAKryukov
 */
@@ -12,17 +12,30 @@ const commandLineParameter = (commandLine => {
     const search = new URLSearchParams(commandLine.slice(1));
     let scriptName = null;
     for (let pair of search)
-        if (pair[1] != null && pair[1].length < 1) {    
+        if (pair[1] != null && pair[1].length < 1) {
             scriptName = pair[0];
             break;
         } //if
     if (scriptName) {
         const script = document.createElement(definitionSet.scripting.script);
         script.src = scriptName;
-        document.head.appendChild(script);    
+        document.head.appendChild(script);
     } //if scriptName
     return scriptName;
 })(window.location.search);
+
+const showPreloadException = (message, fileName) =>
+    modalPopup.show(
+        definitionSet.persistence.formatPersistenceErrorMessage(message, fileName),
+        [],
+        definitionSet.eventHandler.dataModifiedRequestStyles,
+        null, // handler for the end of "modal" state
+        this.table // element to finally focus
+    );
+
+window.onerror = message => {
+    showPreloadException(message, commandLineParameter);
+}; //window.onerror
 
 window.onload = () => {
 
@@ -49,7 +62,7 @@ window.onload = () => {
             elements.errorElement.style.display = definitionSet.CSS.display.none;
             elements.errorElement.style.textContent = null;
         }; //contextMenu.onShown
-        const onMenuCancel = () => setTimeout( () => commandSet.table.focus() );
+        const onMenuCancel = () => setTimeout(() => commandSet.table.focus());
         mainMenu.onShown = onMenuShown;
         mainMenu.onCancel = onMenuCancel;
         contextMenu.onShown = onMenuShown;
@@ -72,8 +85,8 @@ window.onload = () => {
             event.preventDefault();
         }; //window.oncontextmenu    
     })(); //
-    
-    const summary = new Summary(elements);   
+
+    const summary = new Summary(elements);
 
     window.addEventListener(definitionSet.eventHandler.readOnlyEvent, () => {
         const value = commandSet.table.isReadOnly;
@@ -86,7 +99,7 @@ window.onload = () => {
         commandSet.table.isModified = false;
         elements.indicators.modified.textContent = null;
     });
-    
+
     window.onbeforeunload = event => {
         const requiresConfirmation = commandSet.table.isModified;
         if (requiresConfirmation) { // guarantee unload prompt for all browsers:
@@ -96,27 +109,14 @@ window.onload = () => {
             delete (event.returnValue);
     };
 
-    const showPreloadException = (message, fileName) =>
-            modalPopup.show(
-                definitionSet.persistence.formatPersistenceErrorMessage(message, fileName),
-                [],
-                definitionSet.eventHandler.dataModifiedRequestStyles,
-                null, // handler for the end of "modal" state
-                this.table // element to finally focus
-            );
-
     commandSet.table.isReadOnly = false;
     if (commandLineParameter) {
         try {
             if (typeof SAPersonalDatabase == typeof undefined) {
                 showPreloadException(definitionSet.scripting.invalidDatabase, commandLineParameter);
                 return;
-            } else if (!(SAPersonalDatabase instanceof Function)) {
-                showPreloadException(definitionSet.scripting.invalidDatabaseNoFunction(), commandLineParameter);
-                return;
-            } //if
-            const json = definitionSet.persistence.stringToJsonString(SAPersonalDatabase());
-            const data = JSON.parse(json);
+            }
+            const data = SAPersonalDatabase;
             commandSet.table.load(data);
             summary.populate(data);
             if (data.summary)
@@ -135,7 +135,7 @@ window.onload = () => {
         () => commandSet.table.findNext()
     );
 
-    (()=> { //set hints:
+    (() => { //set hints:
         new Hint(elements.main, elements.search.searchPattern);
         new Hint(elements.main, elements.search.options.matchCase);
         new Hint(elements.main, elements.search.options.wholeWord);

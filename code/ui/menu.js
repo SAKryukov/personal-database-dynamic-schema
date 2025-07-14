@@ -1,7 +1,7 @@
 /*
 HTML Menu
 
-Copyright (c) 2023 by Sergey A Kryukov
+Copyright (c) 2017, 2023, 2025 by Sergey A Kryukov
 http://www.SAKryukov.org
 http://www.codeproject.com/Members/SAKryukov
 */
