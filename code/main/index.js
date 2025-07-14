@@ -46,23 +46,26 @@ window.onload = () => {
     elements.product.innerHTML = definitionSet.productFormat();
     document.title = definitionSet.titleFormat();
 
-    const commandSets = createCommandSet();
-    const commandSet = commandSets.commandSet;
-    commandSet.table = new Table(elements.main);
-    commandSet.table.doubleClickHandler = commandSets.doubleClickHandler;
+    const commandSet = createCommandSet(
+        new Table(elements.main),
+        new Summary(elements),
+        elements.errorElement);
+    const commandSetMap = commandSet.commandSetMap;
+
+    commandSetMap.table.doubleClickHandler = commandSet.doubleClickHandler;
     const mainMenu = new menuGenerator(elements.mainMenu);
 
     const contextMenu = new menuGenerator(elements.contextMenu);
     (() => { //menu:
         mainMenu.options = { afterActionBehavior: { hide: true } };
-        mainMenu.subscribe(commandSet);
-        mainMenu.subscribe(commandSets.aboutCommandSet);
-        contextMenu.subscribe(commandSet);
+        mainMenu.subscribe(commandSetMap);
+        mainMenu.subscribe(commandSet.aboutCommandSet);
+        contextMenu.subscribe(commandSetMap);
         const onMenuShown = () => {
             elements.errorElement.style.display = definitionSet.CSS.display.none;
             elements.errorElement.style.textContent = null;
         }; //contextMenu.onShown
-        const onMenuCancel = () => setTimeout(() => commandSet.table.focus());
+        const onMenuCancel = () => setTimeout(() => commandSetMap.table.focus());
         mainMenu.onShown = onMenuShown;
         mainMenu.onCancel = onMenuCancel;
         contextMenu.onShown = onMenuShown;
@@ -86,22 +89,20 @@ window.onload = () => {
         }; //window.oncontextmenu    
     })(); //
 
-    const summary = new Summary(elements);
-
     window.addEventListener(definitionSet.eventHandler.readOnlyEvent, () => {
-        const value = commandSet.table.isReadOnly;
+        const value = commandSetMap.table.isReadOnly;
         elements.indicators.readOnly.textContent = definitionSet.eventHandler.readOnlyIndicator[value ? 1 : 0];
     });
     window.addEventListener(definitionSet.eventHandler.modifiedEvent, () => {
         elements.indicators.modified.textContent = definitionSet.eventHandler.modifiedIndicator;
     });
     window.addEventListener(definitionSet.eventHandler.storedEvent, () => {
-        commandSet.table.isModified = false;
+        commandSetMap.table.isModified = false;
         elements.indicators.modified.textContent = null;
     });
 
     window.onbeforeunload = event => {
-        const requiresConfirmation = commandSet.table.isModified;
+        const requiresConfirmation = commandSetMap.table.isModified;
         if (requiresConfirmation) { // guarantee unload prompt for all browsers:
             event.preventDefault(); // guarantees showing confirmation dialog
             event.returnValue = true; // show confirmation dialog
@@ -109,30 +110,28 @@ window.onload = () => {
             delete (event.returnValue);
     };
 
-    commandSet.table.isReadOnly = false;
+    commandSetMap.table.isReadOnly = false;
     if (commandLineParameter) {
         try {
             if (typeof SAPersonalDatabase == typeof undefined) {
                 showPreloadException(definitionSet.scripting.invalidDatabase, commandLineParameter);
+                document.title = definitionSet.titleFormat();
                 return;
             }
-            const data = SAPersonalDatabase;
-            commandSet.table.load(data);
-            summary.populate(data);
-            if (data.summary)
-                document.title = definitionSet.titleFormat(data.summary.title);
-            commandSet.table.isReadOnly = true;
+            commandSet.loadDatabase(SAPersonalDatabase);
+            commandSetMap.table.isReadOnly = true;
         } catch (e) {
             showPreloadException(e.toString(), commandLineParameter);
+            document.title = definitionSet.titleFormat();
         } //exception
     } //if
-    commandSet.table.focus();
+    commandSetMap.table.focus();
 
     new Search(
         elements,
-        (pattern, matchCase, wholeWord, isRegexp) => commandSet.table.find(pattern, matchCase, wholeWord, isRegexp),
-        () => commandSet.table.hideFound(),
-        () => commandSet.table.findNext()
+        (pattern, matchCase, wholeWord, isRegexp) => commandSetMap.table.find(pattern, matchCase, wholeWord, isRegexp),
+        () => commandSetMap.table.hideFound(),
+        () => commandSetMap.table.findNext()
     );
 
     (() => { //set hints:
@@ -146,12 +145,9 @@ window.onload = () => {
 
     window.onkeydown = event => {
         if (event.key == definitionSet.keyboard.findNext) {
-            commandSet.table.findNext();
+            commandSetMap.table.findNext();
             event.preventDefault();
         } //if
     }; //window.onkeydown
-
-    commandSet.summary = summary;
-    commandSet.errorElement = elements.errorElement;
 
 }; //window.onload

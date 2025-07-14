@@ -8,21 +8,23 @@ http://www.codeproject.com/Members/SAKryukov
 
 "use strict";
 
-const createCommandSet = () => {
+const createCommandSet = (table, summary, errorElement) => {
     
-    const commandSet = new Map();
+    const commandSetMap = new Map();
+    commandSetMap.table = table;
+
     const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
     const notifyStored = () => window.dispatchEvent(storedEvent);
 
     const showException = exception => {
         document.title = definitionSet.titleFormat();
-        commandSet.errorElement.textContent = exception.toString();
-        commandSet.errorElement.style.display = null;
+        errorElement.textContent = exception.toString();
+        errorElement.style.display = null;
     }; //showException
 
     const fileIO = createFileIO(showException);
             
-    commandSet.actConfirmed = function (action) {
+    commandSetMap.actConfirmed = function (action) {
         if (this.table.isModified) {
             modalPopup.show(
                 definitionSet.eventHandler.dataModifiedRequest,
@@ -43,22 +45,26 @@ const createCommandSet = () => {
         document.title = definitionSet.titleFormat(title);
     }; //showTitle
 
-    commandSet.set("New", actionRequest => {
+    commandSetMap.set("New", actionRequest => {
         if (!actionRequest) return;
-        commandSet.actConfirmed(() => commandSet.table.reset() );
+        commandSetMap.actConfirmed(() => commandSetMap.table.reset() );
     });
 
-    commandSet.set("Open", actionRequest => {
+    const loadDatabase = data => {
+        commandSetMap.table.load(data);
+        summary.populate(data);
+        showTitle(data);
+    }; //loadDatabase
+
+    commandSetMap.set("Open", actionRequest => {
         if (!actionRequest) return;
-        commandSet.actConfirmed(() => {
+        commandSetMap.actConfirmed(() => {
             fileIO.loadTextFile((_, text) => {
                 try {
                     const json = definitionSet.scripting.extractJson(text);
                     const data = JSON.parse(json);
-                    commandSet.table.load(data);
-                    commandSet.summary.populate(data);
-                    commandSet.table.isReadOnly = false;
-                    showTitle(data);
+                    loadDatabase(data);
+                    commandSetMap.table.isReadOnly = false;
                     notifyStored();
                 } catch (ex) { showException(ex); }
             }, definitionSet.fileIO.filePickerAcceptType());
@@ -68,8 +74,8 @@ const createCommandSet = () => {
     const implementSave = (alwaysDialog) => {
         let content = null;
         try {
-            const data = commandSet.table.store();
-            commandSet.summary.updateData(data);
+            const data = commandSetMap.table.store();
+            summary.updateData(data);
             showTitle(data);
             const json = JSON.stringify(data);
             content = definitionSet.scripting.wrapJson(json);
@@ -80,71 +86,71 @@ const createCommandSet = () => {
             fileIO.storeFile(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerAcceptType());
     }; //implementSave
 
-    commandSet.set("Save", actionRequest => {
-        if (!actionRequest) return commandSet.table.canStore; //SA???
+    commandSetMap.set("Save", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canStore; //SA???
         implementSave(false);
     });
 
-    commandSet.set("SaveAs", actionRequest => {
+    commandSetMap.set("SaveAs", actionRequest => {
         if (!actionRequest) return;
         implementSave(true);
     });
 
-    commandSet.set("Insert Row", actionRequest => {
-        if (!actionRequest) return commandSet.table.canInsertRow;
-        commandSet.table.insertRow();
+    commandSetMap.set("Insert Row", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canInsertRow;
+        commandSetMap.table.insertRow();
     });
     
-    commandSet.set("Remove Row", actionRequest => {
-        if (!actionRequest) return commandSet.table.canRemoveRow;
-        commandSet.table.removeRow();
+    commandSetMap.set("Remove Row", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canRemoveRow;
+        commandSetMap.table.removeRow();
     });
 
-    commandSet.set("Add Property", actionRequest => {
-        if (!actionRequest) return commandSet.table.canAddProperty;
-        commandSet.table.addProperty()
+    commandSetMap.set("Add Property", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canAddProperty;
+        commandSetMap.table.addProperty()
     });
-    commandSet.set("Insert Property", actionRequest => {
-        if (!actionRequest) return commandSet.table.canInsertProperty;
-        commandSet.table.insertProperty();
+    commandSetMap.set("Insert Property", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canInsertProperty;
+        commandSetMap.table.insertProperty();
     });
-    commandSet.set("Remove Property", actionRequest => {
-        if (!actionRequest) return commandSet.table.canRemoveProperty;
-        commandSet.table.removeProperty()
+    commandSetMap.set("Remove Property", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canRemoveProperty;
+        commandSetMap.table.removeProperty()
     });
 
-    commandSet.set("Copy", actionRequest => {
-        if (!actionRequest) return commandSet.table.canCopyToClipboard;
+    commandSetMap.set("Copy", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canCopyToClipboard;
         try {
-            commandSet.table.toClipboard();
+            commandSetMap.table.toClipboard();
         } catch (ex) { showException(ex); }
     });    
 
-    commandSet.set("Paste", actionRequest => {
-        if (!actionRequest) return commandSet.table.canPasteFromClipboard;
+    commandSetMap.set("Paste", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canPasteFromClipboard;
         try {
-            commandSet.table.fromClipboard();
+            commandSetMap.table.fromClipboard();
         } catch (ex) { showException(ex); }
     });    
     
-    commandSet.set("Edit Selected Cell", actionRequest => {
-        if (!actionRequest) return commandSet.table.canEditSelectedCell;
-        if (commandSet.table.editingMode)
-            setTimeout( () => { commandSet.table.commitEdit() });
+    commandSetMap.set("Edit Selected Cell", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canEditSelectedCell;
+        if (commandSetMap.table.editingMode)
+            setTimeout( () => { commandSetMap.table.commitEdit() });
         else
-            setTimeout( () => { commandSet.table.editSelectedCell() });
+            setTimeout( () => { commandSetMap.table.editSelectedCell() });
     });
 
-    commandSet.set("Edit Property Name", actionRequest => {
-        if (!actionRequest) return commandSet.table.canEditProperty;
-        if (commandSet.table.editingMode)
-            setTimeout( () => { commandSet.table.cancelEdit(); });
+    commandSetMap.set("Edit Property Name", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canEditProperty;
+        if (commandSetMap.table.editingMode)
+            setTimeout( () => { commandSetMap.table.cancelEdit(); });
         else
-            setTimeout( () => { commandSet.table.editProperty(); });
+            setTimeout( () => { commandSetMap.table.editProperty(); });
     });
 
     const loadWebPage = (actionRequest) => {
-        const uri = commandSet.table.selectedUri;
+        const uri = commandSetMap.table.selectedUri;
         if (!actionRequest) return !!uri;
         if (!uri) return false;
         try {
@@ -153,26 +159,26 @@ const createCommandSet = () => {
             showException(exception);
         } //exception
     } //loadWebPage
-    commandSet.set("Load", loadWebPage);
+    commandSetMap.set("Load", loadWebPage);
 
-    commandSet.set("up", actionRequest => {
-        if (!actionRequest) return commandSet.table.canShuffleRow(true);
-        commandSet.table.shuffleRow(true)
+    commandSetMap.set("up", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canShuffleRow(true);
+        commandSetMap.table.shuffleRow(true)
     });    
-    commandSet.set("down", actionRequest => {
-        if (!actionRequest) return commandSet.table.canShuffleRow(false);
-        commandSet.table.shuffleRow(false)
+    commandSetMap.set("down", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canShuffleRow(false);
+        commandSetMap.table.shuffleRow(false)
     });    
-    commandSet.set("left", actionRequest => {
-        if (!actionRequest) return commandSet.table.canShuffleColumn(true);
-        commandSet.table.shuffleColumn(true)
+    commandSetMap.set("left", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canShuffleColumn(true);
+        commandSetMap.table.shuffleColumn(true)
     });    
-    commandSet.set("right", actionRequest => {
-        if (!actionRequest) return commandSet.table.canShuffleColumn(false);
-        commandSet.table.shuffleColumn(false)
+    commandSetMap.set("right", actionRequest => {
+        if (!actionRequest) return commandSetMap.table.canShuffleColumn(false);
+        commandSetMap.table.shuffleColumn(false)
     });    
 
-    commandSet.set("Remember Query String in the Clipboard", actionRequest => {
+    commandSetMap.set("Remember Query String in the Clipboard", actionRequest => {
         if (!actionRequest) return;
         const parameters = (new URLSearchParams(window.location.search));
         for (const [key, _] of parameters) {
@@ -192,6 +198,6 @@ const createCommandSet = () => {
         window.open("https://www.github.com/SAKryukov/personal-database-dynamic-schema", definitionSet.URI.newTab);
     });
 
-    return { commandSet, aboutCommandSet, doubleClickHandler: loadWebPage };
+    return { commandSetMap, aboutCommandSet, doubleClickHandler: loadWebPage, loadDatabase };
 
 };
