@@ -590,6 +590,7 @@ class Table {
             const currentSelection = this.#selectedCell == null ? -1 : this.#selectedCell.parentElement.rowIndex;
             const newSelection = this.#searchResults[0].parentElement.rowIndex;
             this.#select(this.#searchResults[0], newSelection >= currentSelection, true);
+            this.#table.focus();
         } //if
         return this.#searchResults.length;
     } //find
@@ -603,6 +604,7 @@ class Table {
         if (this.#indexInSearchResults >= this.#searchResults.length)
             this.#indexInSearchResults = 0;
         this.#select(this.#searchResults[this.#indexInSearchResults], this.#indexInSearchResults > 0, true);
+        this.#table.focus();
     } //findNext
 
     get isReadOnly() { return this.#isReadOnly; }
