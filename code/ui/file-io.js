@@ -1,50 +1,89 @@
 /*
-Personal Database
-
-Copyright (c) 2017, 2023, 2025 by Sergey A Kryukov
+File I/O
+Copyright (c) 2017, 2025 by Sergey A Kryukov
 http://www.SAKryukov.org
-http://www.codeproject.com/Members/SAKryukov
 */
 
 "use strict";
 
 const createFileIO = showException => {
 
-    const localDefinitionSet = {
+    const definitionSet = {
         defaultLocation: "downloads",
         nonHandledExceptionName: "AbortError",
-    }; //localDefinitionSet
+    }; //definitionSet
 
     const experimentalImplementation = window.showOpenFilePicker && window.showSaveFilePicker;
-    const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
-    const notifyStored = () => window.dispatchEvent(storedEvent);
 
-    let previouslyOpenedFilename = null;
     let fileHandleSave = undefined;
     let fileHandleOpen = undefined;
-    const canSave = () => experimentalImplementation ? fileHandleSave != null : previouslyOpenedFilename != null;
+    let previouslyOpenedFilename = null; // fallback
 
     const exceptionHandler = exception => {
-        if (showException != null &&
-            //SA??? cannot see the other way to detect "The user aborted a request",
-            // in contrast to "real" I/O error:
-            !exception.message.toLowerCase().includes("user")) 
+        if (showException != null && exception.name != definitionSet.nonHandledExceptionName)
             showException(exception);
     }; //exceptionHandler
 
-    const storeFileFallback = (fileName, content) => {
+    const saveFileWithHandle = (handle, content) => {
+        if (!handle) return;
+        handle.createWritable().then(stream => {
+            stream.write(content).then(() => {
+                stream.close();
+            }).catch(writeException => {
+                exceptionHandler(writeException);
+            });
+        }).catch(createWritableException => {
+            exceptionHandler(createWritableException);
+        });
+    }; //saveFileWithHandle
+
+    const loadTextFile = (fileHandler, options) => { // fileHandler(fileName, text)
+        options.startIn = fileHandleSave ?? fileHandleOpen ?? definitionSet.defaultLocation;
+        if (!fileHandler) return;
+        window.showOpenFilePicker(options).then(handles => {
+            if (!handles) return;
+            if (!handles.length) return;
+            fileHandleOpen = handles[0];
+            handles[0].getFile().then(file => {
+                file.text().then(text => {
+                    fileHandler(handles[0].name, text);
+                }).catch(fileTextException => {
+                    exceptionHandler(fileTextException);
+                });
+            }).catch(getFileException => {
+                exceptionHandler(getFileException);
+            });
+        }).catch(openFilePicketException => {
+            exceptionHandler(openFilePicketException);
+        });
+    }; //loadTextFile
+
+    const storeTextFile = (_, content, options) => {
+        options.startIn = fileHandleSave ?? fileHandleOpen ?? definitionSet.defaultLocation;
+        window.showSaveFilePicker(options).then(handle => {
+            if (!handle) return;
+            fileHandleSave = handle;
+            saveFileWithHandle(handle, content);
+        }).catch(saveFilePickerException => {
+            exceptionHandler(saveFilePickerException);
+        });
+    }; //storeTextFile
+
+    const saveExisting = (_, content, options) => {
+        if (fileHandleSave != null)
+            saveFileWithHandle(fileHandleSave, content);
+        else
+            storeTextFile(null, content, options);
+    }; //saveExisting
+
+    const storeTextFileFallback = (fileName, content, _) => {
         const link = document.createElement('a');
         link.href = `data:application/javascript;charset=utf-8,${encodeURIComponent(content)}`; //sic!
-        link.download = previouslyOpenedFilename == null
+        link.download = this.previouslyOpenedFilename == null
             ? fileName
-            : previouslyOpenedFilename;
+            : this.previouslyOpenedFilename;
         link.click();
-        notifyStored(); //can be false-positive, because it is not known if download was successful or not
-    }; //storeFileFallback
-
-    const saveExistingFallback = (fileName, content) => {
-        storeFileFallback(previouslyOpenedFilename ?? fileName, content);
-    }; //saveExistingFallback
+    }; //storeTextFileFallback
 
     const loadTextFileFallback = (fileHandler, fileType) => { // fileHandler(fileName, text)
         if (!fileHandler) return;
@@ -69,66 +108,14 @@ const createFileIO = showException => {
         input.click();
     }; //loadTextFileFallback
 
-    const createOptions = fileType => { return {
-            types: [fileType],
-            startIn: fileHandleSave ?? fileHandleOpen ?? localDefinitionSet.defaultLocation,
-        };
-    }; //createOptions
-    const saveFileWithHandle = (handle, content) => {
-        if (!handle) return;
-        handle.createWritable().then(stream => {
-            stream.write(content).then(() => {
-                stream.close();
-                notifyStored();
-            }).catch(writeException => {
-                exceptionHandler(writeException);
-            });
-        }).catch(createWritableException => {
-            exceptionHandler(createWritableException);
-        });
-    }; //saveFileWithHandle
-
-    const loadTextFile = (fileHandler, fileType) => { // fileHandler(fileName, text)
-        if (!fileHandler) return;
-        window.showOpenFilePicker(createOptions(fileType)).then(handles => {
-            if (!handles) return;
-            if (!handles.length) return;
-            fileHandleOpen = handles[0];
-            handles[0].getFile().then(file => {
-                file.text().then(text => {
-                    fileHandler(handles[0].name, text);
-                }).catch(fileTextException => {
-                    exceptionHandler(fileTextException);
-                });
-            }).catch(getFileException => {
-                exceptionHandler(getFileException);
-            });
-        }).catch(openFilePicketException => {
-            exceptionHandler(openFilePicketException);
-        });
-    }; //loadTextFile
-
-    const storeFile = (_, content, fileType) => {
-        window.showSaveFilePicker(createOptions(fileType)).then(handle => {
-            if (!handle) return;
-            fileHandleSave = handle;
-            saveFileWithHandle(handle, content);
-        }).catch(saveFilePickerException => {
-            exceptionHandler(saveFilePickerException);
-        });
-    }; //storeFile
-
-    const saveExisting = (_, content, fileType) => {
-        if (fileHandleSave != null)
-            saveFileWithHandle(fileHandleSave, content);
-        else
-            storeFile(null, content, fileType);
-    }; //saveExisting
+    const saveExistingFallback = (fileName, content) => {
+        storeTextFileFallback(previouslyOpenedFilename ?? fileName, content);
+    }; //saveExistingFallback
 
     return {
-        canSave: canSave,
+        isFallback: !experimentalImplementation,
         saveExisting: experimentalImplementation ? saveExisting : saveExistingFallback,
-        storeFile: experimentalImplementation ? storeFile : storeFileFallback,
+        storeTextFile: experimentalImplementation ? storeTextFile : storeTextFileFallback,
         loadTextFile: experimentalImplementation ? loadTextFile : loadTextFileFallback,
     };
 

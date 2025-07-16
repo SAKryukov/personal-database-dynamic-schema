@@ -24,17 +24,19 @@ const commandLineParameter = (commandLine => {
     return scriptName;
 })(window.location.search);
 
+let focusTable = null;
+
 const showPreloadException = (message, fileName) =>
     modalPopup.show(
         definitionSet.persistence.formatPersistenceErrorMessage(message, fileName),
         [],
         definitionSet.eventHandler.dataModifiedRequestStyles,
         null, // handler for the end of "modal" state
-        this.table // element to finally focus
+        focusTable.element // element to finally focus
     );
 
 window.onerror = message => {
-    showPreloadException(message, commandLineParameter);
+    showPreloadException(message, commandLineParameter, null);
 }; //window.onerror
 
 window.onload = () => {
@@ -46,10 +48,10 @@ window.onload = () => {
     elements.product.innerHTML = definitionSet.productFormat();
     document.title = definitionSet.titleFormat();
 
+    focusTable = new Table(elements.main);
     const commandSet = createCommandSet(
-        new Table(elements.main),
-        new Summary(elements),
-        elements.errorElement);
+        focusTable,
+        new Summary(elements));
     const commandSetMap = commandSet.commandSetMap;
 
     commandSetMap.table.doubleClickHandler = commandSet.doubleClickHandler;
@@ -61,14 +63,8 @@ window.onload = () => {
         mainMenu.subscribe(commandSetMap);
         mainMenu.subscribe(commandSet.aboutCommandSet);
         contextMenu.subscribe(commandSetMap);
-        const onMenuShown = () => {
-            elements.errorElement.style.display = definitionSet.CSS.display.none;
-            elements.errorElement.style.textContent = null;
-        }; //contextMenu.onShown
         const onMenuCancel = () => setTimeout(() => commandSetMap.table.focus());
-        mainMenu.onShown = onMenuShown;
         mainMenu.onCancel = onMenuCancel;
-        contextMenu.onShown = onMenuShown;
         contextMenu.onCancel = onMenuCancel;
     })(); //menu
 

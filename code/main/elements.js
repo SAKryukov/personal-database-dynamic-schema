@@ -15,7 +15,6 @@ const getElements = () => {
         product: document.querySelector("#product"),
         mainMenu: document.querySelector("header > menu"),
         contextMenu: document.querySelector("main select"),
-        errorElement: document.querySelector("#error"),
         summary: {
             title: document.querySelector("#summary-title"),
             created: document.querySelector("#summary-created"),

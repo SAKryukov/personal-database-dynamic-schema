@@ -619,4 +619,6 @@ class Table {
     get doubleClickHandler() { return this.#doubleClickHandler; }
     set doubleClickHandler(handler) { this.#doubleClickHandler = handler; }
 
+    get element() { return this.#table; }
+
 } //class Table

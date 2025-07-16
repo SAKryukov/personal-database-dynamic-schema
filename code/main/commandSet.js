@@ -8,7 +8,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 "use strict";
 
-const createCommandSet = (table, summary, errorElement) => {
+const createCommandSet = (table, summary) => {
     
     const commandSetMap = new Map();
     commandSetMap.table = table;
@@ -16,10 +16,15 @@ const createCommandSet = (table, summary, errorElement) => {
     const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
     const notifyStored = () => window.dispatchEvent(storedEvent);
 
-    const showException = exception => {
+    const showException = exception => {      
+        modalPopup.show(
+            exception.toString(),
+            [],
+            definitionSet.eventHandler.dataModifiedRequestStyles,
+            null, // handler for the end of "modal" state
+            commandSetMap.table.element // element to finally focus
+        );
         document.title = definitionSet.titleFormat();
-        errorElement.textContent = exception.toString();
-        errorElement.style.display = null;
     }; //showException
 
     const fileIO = createFileIO(showException);
@@ -198,6 +203,6 @@ const createCommandSet = (table, summary, errorElement) => {
         window.open("https://www.github.com/SAKryukov/personal-database-dynamic-schema", definitionSet.URI.newTab);
     });
 
-    return { commandSetMap, aboutCommandSet, doubleClickHandler: loadWebPage, loadDatabase };
+    return { commandSetMap, aboutCommandSet, doubleClickHandler: loadWebPage, loadDatabase, showPreloadException };
 
 };
