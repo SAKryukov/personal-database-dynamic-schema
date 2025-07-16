@@ -37,10 +37,14 @@ class Search {
             searchResults.textContent = definitionSet.search.foundNumber(found);
             if (found > 0)
                 buttonNext.style.display = definitionSet.CSS.display.button;
+            event.preventDefault();
         } //pattern.onkeydown
 
         if (findNextHandler)
-            buttonNext.onclick = () => findNextHandler();
+            buttonNext.onclick = event => {
+                findNextHandler();
+                event.preventDefault();
+            };
 
         const setButtonChangeHandler = button => {
 
