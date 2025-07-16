@@ -8,7 +8,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 "use strict";
 
-let lexicalErrorMessage = null;
+let lexicalErrorMessage = undefined;
 window.onerror = message =>
     lexicalErrorMessage = message;
 
@@ -94,26 +94,6 @@ window.onload = () => {
     }; //window.onbeforeunload
 
     commandSetMap.table.isReadOnly = false;
-    if (commandLineParameter) {
-        try {
-            if (lexicalErrorMessage) {
-                commandSet.showPreloadException(lexicalErrorMessage, commandLineParameter);
-                document.title = definitionSet.titleFormat();
-                return;
-            }
-            if (typeof SAPersonalDatabase == typeof undefined) {
-                commandSet.showPreloadException(definitionSet.scripting.invalidDatabase, commandLineParameter);
-                document.title = definitionSet.titleFormat();
-                return;
-            }
-            commandSet.loadDatabase(SAPersonalDatabase);
-            commandSetMap.table.isReadOnly = true;
-        } catch (e) {
-            commandSet.showPreloadException(e.toString(), commandLineParameter);
-            document.title = definitionSet.titleFormat();
-        } //exception
-    } //if
-    commandSetMap.table.focus();
 
     new Search(
         elements,
@@ -137,5 +117,22 @@ window.onload = () => {
             event.preventDefault();
         } //if
     }; //window.onkeydown
+
+    if (commandLineParameter) {
+        try {
+            if (lexicalErrorMessage != undefined)
+                return lexicalErrorMessage =
+                    commandSet.showPreloadException(lexicalErrorMessage, commandLineParameter);
+            if (typeof SAPersonalDatabase == typeof undefined)
+                return commandSet.showPreloadException(definitionSet.scripting.invalidDatabase, commandLineParameter);
+            commandSet.loadDatabase(SAPersonalDatabase);
+            commandSetMap.table.isReadOnly = true;
+        } catch (e) {
+            commandSet.showPreloadException(e.toString(), commandLineParameter);
+            document.title = definitionSet.titleFormat();
+        } //exception
+    } //if
+
+    console.log("here");
 
 }; //window.onload
