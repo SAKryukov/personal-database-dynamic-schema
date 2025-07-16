@@ -8,6 +8,10 @@ http://www.codeproject.com/Members/SAKryukov
 
 "use strict";
 
+let lexicalErrorMessage = null;
+window.onerror = message =>
+    lexicalErrorMessage = message;
+
 const commandLineParameter = (commandLine => {
     const search = new URLSearchParams(commandLine.slice(1));
     let scriptName = null;
@@ -19,23 +23,10 @@ const commandLineParameter = (commandLine => {
     if (scriptName) {
         const script = document.createElement(definitionSet.scripting.script);
         script.src = scriptName;
-        document.head.appendChild(script);
+        document.head.appendChild(script); // can invoke window.onerror before calling window.onload
     } //if scriptName
     return scriptName;
 })(window.location.search);
-
-const showPreloadException = (message, fileName, focusElement) =>
-    modalPopup.show(
-        definitionSet.persistence.formatPersistenceErrorMessage(message, fileName),
-        [],
-        definitionSet.eventHandler.dataModifiedRequestStyles,
-        null, // handler for the end of "modal" state
-        focusElement // element to finally focus
-    );
-
-window.onerror = message => {
-    showPreloadException(message, commandLineParameter, null);
-}; //window.onerror
 
 window.onload = () => {
 
@@ -105,15 +96,20 @@ window.onload = () => {
     commandSetMap.table.isReadOnly = false;
     if (commandLineParameter) {
         try {
+            if (lexicalErrorMessage) {
+                commandSet.showPreloadException(lexicalErrorMessage, commandLineParameter);
+                document.title = definitionSet.titleFormat();
+                return;
+            }
             if (typeof SAPersonalDatabase == typeof undefined) {
-                showPreloadException(definitionSet.scripting.invalidDatabase, commandLineParameter, commandSetMap.table.element);
+                commandSet.showPreloadException(definitionSet.scripting.invalidDatabase, commandLineParameter);
                 document.title = definitionSet.titleFormat();
                 return;
             }
             commandSet.loadDatabase(SAPersonalDatabase);
             commandSetMap.table.isReadOnly = true;
         } catch (e) {
-            showPreloadException(e.toString(), commandLineParameter, commandSetMap.table.element);
+            commandSet.showPreloadException(e.toString(), commandLineParameter);
             document.title = definitionSet.titleFormat();
         } //exception
     } //if

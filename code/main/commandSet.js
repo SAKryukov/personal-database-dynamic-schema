@@ -16,16 +16,18 @@ const createCommandSet = (table, summary) => {
     const storedEvent = new CustomEvent(definitionSet.eventHandler.storedEvent);
     const notifyStored = () => window.dispatchEvent(storedEvent);
 
-    const showException = exception => {      
+    const errorMessageBox = message =>
         modalPopup.show(
-            exception.toString(),
+            message,
             [],
             definitionSet.eventHandler.dataModifiedRequestStyles,
             null, // handler for the end of "modal" state
             commandSetMap.table.element // element to finally focus
         );
-        document.title = definitionSet.titleFormat();
-    }; //showException
+    const showException = exception =>
+        errorMessageBox(exception.toString());
+    const showPreloadException = (message, fileName) =>
+        errorMessageBox(definitionSet.persistence.formatPersistenceErrorMessage(message, fileName));
 
     const fileIO = createFileIO(showException);
             
@@ -204,6 +206,6 @@ const createCommandSet = (table, summary) => {
         window.open("https://www.github.com/SAKryukov/personal-database-dynamic-schema", definitionSet.URI.newTab);
     });
 
-    return { commandSetMap, aboutCommandSet, doubleClickHandler: loadWebPage, loadDatabase };
+    return { commandSetMap, aboutCommandSet, doubleClickHandler: loadWebPage, loadDatabase, showPreloadException };
 
 };
