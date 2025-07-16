@@ -66,6 +66,7 @@ const createCommandSet = (table, summary) => {
         commandSetMap.actConfirmed(() => {
             fileIO.loadTextFile((_, text) => {
                 try {
+                    definitionSet.scripting.checkupSignature(text);
                     const json = definitionSet.scripting.extractJson(text);
                     const data = JSON.parse(json);
                     loadDatabase(data);

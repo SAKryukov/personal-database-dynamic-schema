@@ -66,6 +66,12 @@ const definitionSet = {
     scripting: {
         script: "script",
         dataFunctionName: () => { const SAPersonalDatabase = () => null; return SAPersonalDatabase.name; },
+        checkupSignature: function(text) {
+            const signature = this.dataFunctionName();
+            const regexp = new RegExp(`^const\\s+${signature}\\s*=\\s*\{`);
+            if (!regexp.test(text.trim()))
+                throw new Error(`Invalid signature. Database file should start with:<br/><code>const ${signature} = {</code>`);
+        }, //checkupSignature
         extractJson: text =>
             text.substring(
                 text.indexOf("{"), text.length - 1).trim(),
