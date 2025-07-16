@@ -133,6 +133,4 @@ window.onload = () => {
         } //exception
     } //if
 
-    console.log("here");
-
 }; //window.onload
