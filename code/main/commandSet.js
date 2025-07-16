@@ -204,6 +204,6 @@ const createCommandSet = (table, summary) => {
         window.open("https://www.github.com/SAKryukov/personal-database-dynamic-schema", definitionSet.URI.newTab);
     });
 
-    return { commandSetMap, aboutCommandSet, doubleClickHandler: loadWebPage, loadDatabase, showPreloadException };
+    return { commandSetMap, aboutCommandSet, doubleClickHandler: loadWebPage, loadDatabase };
 
 };
