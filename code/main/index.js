@@ -49,7 +49,6 @@ window.onload = () => {
         new Table(elements.main),
         new Summary(elements));
     const commandSetMap = commandSet.commandSetMap;
-    commandSetMap.table.element.focus();    
 
     commandSetMap.table.doubleClickHandler = commandSet.doubleClickHandler;
     const mainMenu = new menuGenerator(elements.mainMenu);
