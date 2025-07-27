@@ -66,7 +66,7 @@ const definitionSet = {
             text.substring(
                 text.indexOf("{"), text.length - 1).trim(),
         wrapJson: function(json) {
-            return `const ${this.dataFunctionName()}=()=>${json};`;
+            return `const ${this.dataFunctionName()}=${json};`;
         },
         invalidDatabase: "Invalid database",
     },
