@@ -11,7 +11,7 @@ http://www.codeproject.com/Members/SAKryukov
 const definitionSet = {
 
     product: "Personal Database",
-    version: "3.0.0",
+    version: "4.0.0",
     years: "2017, 2023, 2025",
 
     productFormat: function() { return `${this.product} v.&thinsp;${this.version}`; },
@@ -22,17 +22,7 @@ const definitionSet = {
         dataModifiedRequestButtonConfirm: "Proceed",
         dataModifiedRequestButtonCancel: "Cancel",
         dataModifiedRequestStyles: {
-            width: null,
-            equalizeButtonWidths: true,
-            dimmerOpacity: 0.5,
-            dimmerColor: "#332234",
-            backgroundColor: { message: "cornSilk", buttonPad: "maroon", button: "aliceBlue" },
-            padding: {
-                textPad: { horizontal: "2.4em", vertical: "1em" },
-                buttonSpacing: "2.4em",
-                buttonPad: { horizontal: "2.4em", vertical: "0.6em" },
-            },
-            buttonFocusOutline: "solid 2.8px cornSilk",
+            cssClass: "exception",
         },
         readOnlyEvent: "readonly",
         modifiedEvent: "modified",
@@ -181,7 +171,7 @@ const definitionSet = {
                 element.textContent = data;    
         }, //fromText
         formatPersistenceErrorMessage: (message, fileName) =>
-            `<p>${message}</p><br/><p>Script: ${String.fromCodePoint(0x201c)}${fileName}${String.fromCodePoint(0x201d)}</p>`,
+            `<p>${message}</p><p>Script: ${String.fromCodePoint(0x201c)}${fileName}${String.fromCodePoint(0x201d)}</p>`,
     }, //persistence
 
     URI: {

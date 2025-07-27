@@ -17,13 +17,11 @@ const createCommandSet = (table, summary) => {
     const notifyStored = () => window.dispatchEvent(storedEvent);
 
     const errorMessageBox = message =>
-        modalPopup.show(
+        modalDialog.show(
             message,
-            [],
-            definitionSet.eventHandler.dataModifiedRequestStyles,
-            null, // handler for the end of "modal" state
-            commandSetMap.table.element // element to finally focus
-        );
+            { options: {
+                focusAfterAction: commandSetMap.table.element,
+                cssClasses: definitionSet.eventHandler.dataModifiedRequestStyles.cssClass } });
     const showException = exception =>
         errorMessageBox(exception.toString());
     const showPreloadException = (message, fileName) =>
@@ -33,16 +31,13 @@ const createCommandSet = (table, summary) => {
             
     commandSetMap.actConfirmed = function (action) {
         if (this.table.isModified) {
-            modalPopup.show(
+            modalDialog.show(
                 definitionSet.eventHandler.dataModifiedRequest,
-                [
-                    { text: definitionSet.eventHandler.dataModifiedRequestButtonConfirm, action: action },
-                    { escape: true, text: definitionSet.eventHandler.dataModifiedRequestButtonCancel }
-                ],
-                definitionSet.eventHandler.dataModifiedRequestStyles,
-                null, // handler for the end of "modal" state
-                this.table // element to finally focus
-            );
+                { options: { focusAfterAction: this.table },
+                  buttons: [
+                    { text: definitionSet.eventHandler.dataModifiedRequestButtonConfirm, action: action, },
+                    { text: definitionSet.eventHandler.dataModifiedRequestButtonCancel, isEscape: true, }
+                  ], });
         } else
             action();
     }; //commandSet.actConfirmed
@@ -88,7 +83,7 @@ const createCommandSet = (table, summary) => {
             const json = JSON.stringify(data);
             content = definitionSet.scripting.wrapJson(json);
         } catch (ex) { showException(ex); }
-        if (fileIO.canSave() && (!alwaysDialog))
+        if (fileIO.canSave && (!alwaysDialog))
             fileIO.saveExisting(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerAcceptType());
         else
             fileIO.storeFile(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerAcceptType());

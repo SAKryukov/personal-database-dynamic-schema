@@ -16,7 +16,7 @@ http://www.codeproject.com/Members/SAKryukov
         <script src="ui/accesskey.js"></script>
         <script src="ui/two-state-button.js"></script>
         <script src="ui/menu.js"></script>
-        <script src="ui/modal-popup.js"></script>
+        <script src="ui/modal-dialog.js"></script>
         <script src="ui/table.js"></script>
         <script src="ui/summary.js"></script>
         <script src="ui/search.js"></script>
@@ -27,6 +27,11 @@ http://www.codeproject.com/Members/SAKryukov
         <link rel="icon" type="image/svg+xml" href="./images/sadb.svg"/>
         <style>
             @import url(ui/style.css);
+            @import url(ui/modal-dialog.css);
+            dialog p { margin: 0; margin-bottom: 0.4em; }
+            dialog.exception section:first-of-type { color: red; }
+            dialog > section:first-of-type { background-color: Cornsilk; }
+            dialog > section:last-of-type { background-color: hsl(6, 70%, 40%, 100%); }
         </style>
     </head>
 <body> 

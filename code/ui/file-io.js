@@ -18,6 +18,8 @@ const createFileIO = showException => {
     let fileHandleSave = undefined;
     let fileHandleOpen = undefined;
     let previouslyOpenedFilename = null; // fallback
+    
+    const canSave = () => experimentalImplementation ? fileHandleSave != null : previouslyOpenedFilename != null;
 
     const exceptionHandler = exception => {
         if (showException != null && exception.name != definitionSet.nonHandledExceptionName)
@@ -113,6 +115,7 @@ const createFileIO = showException => {
     }; //saveExistingFallback
 
     return {
+        canSave,
         isFallback: !experimentalImplementation,
         saveExisting: experimentalImplementation ? saveExisting : saveExistingFallback,
         storeTextFile: experimentalImplementation ? storeTextFile : storeTextFileFallback,
