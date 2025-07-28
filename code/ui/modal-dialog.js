@@ -2,7 +2,7 @@
 
 Modal Dialog
 
-v.4.0
+v.4.1
 
 Copyright (c) 2025 by Sergey A Kryukov
 https://www.SAKryukov.org
@@ -32,7 +32,6 @@ const modalDialog = (() => {
         },
         cssClassSeparator: ` `,
         empty: ``,
-        codePointClipboard: 0x1f4cb,
         toPixel: value => `${value}px`,
         translate: (x, y) => `translate(${x}px, ${y}px)`,
         setup: function() {
@@ -74,6 +73,7 @@ const modalDialog = (() => {
         buttonSection: null,
         initialFocusElement: null,
         focusElementOnClose: null,
+        previousFocus: null,
     }; //elementSet
 
     const buttonSet = {
@@ -126,7 +126,6 @@ const modalDialog = (() => {
                 event.preventDefault();
         }; //elementSet.dialog.onkeydown
         const copyElement = document.createElement(definitionSet.tags.aside);
-        copyElement.textContent = String.fromCodePoint(definitionSet.codePointClipboard);
         copyElement.style.position = definitionSet.names.absolute;
         copyElement.title = definitionSet.names.Copy;
         elementSet.dialog.appendChild(copyElement);
@@ -144,6 +143,8 @@ const modalDialog = (() => {
         elementSet.dialog.close();
         if (elementSet.focusElementOnClose)
             elementSet.focusElementOnClose.focus();
+        else if (elementSet.previousFocus)
+            elementSet.previousFocus.focus();
         state.reset();
         elementSet.dialog.style.transform = null;
     }; //close
@@ -199,6 +200,7 @@ const modalDialog = (() => {
         elementSet.buttonSection.innerHTML = null;
         const buttonMap = new Map();
         buttonSet.reset();
+        elementSet.previousFocus = document.activeElement;
         if (detail.buttons.length && detail.buttons.length > 0)
             for (let buttonDescriptor of detail.buttons) {
                 const button = document.createElement(definitionSet.tags.button);
@@ -241,7 +243,7 @@ const modalDialog = (() => {
                 elementSet.initialFocusElement.focus();
             else if (focusButton)
                 focusButton.focus();
-        }; //restoreFocus
+    }; //restoreFocus
         const canRestoreDrag = state.previousMessage == message;
         state.previousMessage = message;
         if (canRestoreDrag && detail.options.drag.usePreviousPosition) {
