@@ -120,11 +120,17 @@ const definitionSet = {
 
     fileIO: {
         accept: ".sadb",
-        filePickerAcceptType: function() {
+        filePickerOptions: function() {
             return {
-            description: "SADB or JSON file",
-            accept: { "application/ecmascript": [this.accept, ".json"] },
-          };
+               types: [
+                    {
+                        description: "SADB or JSON file",
+                        accept: { "application/ecmascript": [this.accept, ".json"] },
+                    },                
+                ],
+                suggestedName: this.defaultSaveFilename(),
+                startIn: "downloads",
+            };
         },
         defaultSaveFilename: function() { return `default${this.accept}`; },
     },

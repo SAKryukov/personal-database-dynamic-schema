@@ -70,11 +70,11 @@ const createCommandSet = (table, summary) => {
                     commandSetMap.table.isReadOnly = false;
                     notifyStored();
                 } catch (ex) { showException(ex); }
-            }, definitionSet.fileIO.filePickerAcceptType());
+            }, definitionSet.fileIO.filePickerOptions());
         });
     });
 
-    const implementSave = (alwaysDialog) => {
+    const implementSave = alwaysDialog => {
         let content = null;
         try {
             const data = commandSetMap.table.store();
@@ -84,9 +84,9 @@ const createCommandSet = (table, summary) => {
             content = definitionSet.scripting.wrapJson(json);
         } catch (ex) { showException(ex); }
         if (fileIO.canSave && (!alwaysDialog))
-            fileIO.saveExisting(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerAcceptType());
+            fileIO.saveExisting(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerOptions());
         else
-            fileIO.storeTextFile(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerAcceptType());
+            fileIO.storeTextFile(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerOptions());
     }; //implementSave
 
     commandSetMap.set("Save", actionRequest => {
