@@ -86,7 +86,7 @@ const createCommandSet = (table, summary) => {
         if (fileIO.canSave && (!alwaysDialog))
             fileIO.saveExisting(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerAcceptType());
         else
-            fileIO.storeFile(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerAcceptType());
+            fileIO.storeTextFile(definitionSet.fileIO.defaultSaveFilename(), content, definitionSet.fileIO.filePickerAcceptType());
     }; //implementSave
 
     commandSetMap.set("Save", actionRequest => {
