@@ -10,7 +10,8 @@ const createFileIO = showException => {
 
     const definitionSet = {
         defaultLocation: "downloads",
-        nonHandledExceptionName: "AbortError",
+        nonHandledExceptionNameUserAbort: "AbortError",
+        nonHandledExceptionNameNotAllowed: "NotAllowedError",
     }; //definitionSet
 
     const experimentalImplementation = window.showOpenFilePicker && window.showSaveFilePicker;
@@ -19,7 +20,9 @@ const createFileIO = showException => {
     let fileHandleOpen = undefined;
     let previouslyOpenedFilename = null; // fallback
     
-    const canSave = () => experimentalImplementation ? fileHandleSave != null : previouslyOpenedFilename != null;
+    const canSave = () => experimentalImplementation
+        ? fileHandleSave != null || fileHandleOpen != null
+        : previouslyOpenedFilename != null;
 
     const saveFileWithHandle = (handle, content) => {
         if (!handle) return;
@@ -30,7 +33,8 @@ const createFileIO = showException => {
                 showException(writeException);
             });
         }).catch(createWritableException => {
-            showException(createWritableException);
+            if (createWritableException.name != definitionSet.nonHandledExceptionNameNotAllowed)
+                showException(createWritableException);
         });
     }; //saveFileWithHandle
 
@@ -51,7 +55,7 @@ const createFileIO = showException => {
                 showException(getFileException);
             });
         }).catch(openFilePicketException => {
-            if (openFilePicketException.name != definitionSet.nonHandledExceptionName)
+            if (openFilePicketException.name != definitionSet.nonHandledExceptionNameUserAbort)
                 showException(openFilePicketException);
         });
     }; //loadTextFile
@@ -63,14 +67,15 @@ const createFileIO = showException => {
             fileHandleSave = handle;
             saveFileWithHandle(handle, content);
         }).catch(saveFilePickerException => {
-            if (saveFilePickerException.name != definitionSet.nonHandledExceptionName)
+            if (saveFilePickerException.name != definitionSet.nonHandledExceptionNameUserAbort)
                 showException(saveFilePickerException);
         });
     }; //storeTextFile
 
     const saveExisting = (_, content, options) => {
-        if (fileHandleSave != null)
-            saveFileWithHandle(fileHandleSave, content);
+        const fileHandle = fileHandleSave ?? fileHandleOpen;
+        if (fileHandle != null)
+            saveFileWithHandle(fileHandle, content);
         else
             storeTextFile(null, content, options);
     }; //saveExisting
