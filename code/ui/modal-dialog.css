@@ -2,7 +2,7 @@
     --horizontal-gap: 1em;
     --vertical-gap: 0.4em;
     --vertical-gap-clipboard: 1.4em;
-    --dialog-border-radius: 8px;
+    --dialog-border-radius: 8.2px;
     --clipboard-size: 22px;
     --clipboard-gap: 0px;
 }
@@ -11,10 +11,10 @@ dialog { margin: auto; }
 dialog { padding: 0; border: none; border-radius: var(--dialog-border-radius); outline: none; }
 dialog > section { padding: 1em; padding-top: var(--vertical-gap); padding-bottom: var(--vertical-gap); }
 dialog > section:first-of-type { background-color: floralWhite; padding-top: var(--vertical-gap-clipboard); }
-dialog > section:last-of-type { background-color: silver; border-top: black solid thin; display: flex; justify-content: space-around; }
+dialog > section:last-of-type { background-color: hsl(300, 10%, 84%); border-top: darkviolet solid thin; display: flex; justify-content: space-around; }
 dialog button {
     background-color: ghostwhite;
-    border: solid thin black; 
+    border: solid thin darkviolet; 
     padding-left: var(--horizontal-gap);
     padding-right: var(--horizontal-gap);
     padding-top: var(--vertical-gap);
@@ -24,9 +24,9 @@ dialog button {
     margin-left: var(--horizontal-gap);
 }
 dialog button:first-of-type { margin-left: 0; }
-dialog button:focus { outline: solid 2px ghostwhite; }
-dialog button:hover { background-color: lightblue; }
-dialog button:active { background-color: purple; color: white; }
+dialog button:focus { outline: solid 3px ghostwhite; }
+dialog button:hover { background-color: rgb(220, 247, 255); }
+dialog button:active { background-color:slateblue; color: white; }
 ::backdrop { background-color:  hsl(300, 30%, 15%, 100%); opacity: 0.5; }
 dialog aside { /* copy to clipboard element */
     width: var(--clipboard-size); height: var(--clipboard-size);
@@ -39,4 +39,5 @@ dialog aside { /* copy to clipboard element */
     opacity: 0.6;
 }
 dialog aside:hover { opacity: 1; }
-dialog aside:active { background-color: yellow; }
+dialog aside:active { background-color: salmon; }
+

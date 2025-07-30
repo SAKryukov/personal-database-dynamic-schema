@@ -2,7 +2,7 @@
 
 Modal Dialog
 
-v.4.1
+v.4.2
 
 Copyright (c) 2025 by Sergey A Kryukov
 https://www.SAKryukov.org
@@ -14,13 +14,18 @@ https://www.codeproject.com/Members/SAKryukov
 
 const modalDialog = (() => {
 
+    const metadata = {
+        version: "4.2",
+        date: 2025,
+    }; //metadata
+    Object.freeze(metadata);
+
     const definitionSet = {
         keys: {
-            Enter: 0, Escape: 0,
+            Enter: 0, Escape: 0, KeyC: 0, Insert: 0,
         },
         names: {
             Close: 0,
-            Copy: 0,
             absolute: 0,
             pointermove: 0,
         },
@@ -32,6 +37,7 @@ const modalDialog = (() => {
         },
         cssClassSeparator: ` `,
         empty: ``,
+        titleClipboardCopy: "Copy (Ctrl+Insert, Ctrl+C)",
         toPixel: value => `${value}px`,
         translate: (x, y) => `translate(${x}px, ${y}px)`,
         setup: function() {
@@ -122,12 +128,16 @@ const modalDialog = (() => {
                 buttonSet.escapeButton.click();
             else if (event.code == definitionSet.keys.Enter && buttonSet.enterButton)
                 buttonSet.enterButton.click();
+            else if (event.ctrlKey && (event.code == definitionSet.keys.Insert || event.code == definitionSet.keys.KeyC)) {
+                navigator.clipboard.writeText(elementSet.messageSection.innerHTML);
+                event.preventDefault();
+            } //if
             if (event.code == definitionSet.keys.Escape || event.code == definitionSet.keys.Enter)
                 event.preventDefault();
         }; //elementSet.dialog.onkeydown
         const copyElement = document.createElement(definitionSet.tags.aside);
         copyElement.style.position = definitionSet.names.absolute;
-        copyElement.title = definitionSet.names.Copy;
+        copyElement.title = definitionSet.titleClipboardCopy;
         elementSet.dialog.appendChild(copyElement);
         copyElement.onclick = () => 
             navigator.clipboard.writeText(elementSet.messageSection.innerHTML);
@@ -170,13 +180,16 @@ const modalDialog = (() => {
     const setMessage = message => {
         if (message.constructor == String)
             elementSet.messageSection.innerHTML = message;
-        else if (message instanceof HTMLElement)
-            elementSet.messageSection.appendChild(message)
-        else if (message instanceof Array) {
-            for (let element of message)
-                if (!element instanceof HTMLElement) return;
-            for (let element of message)
-                elementSet.messageSection.appendChild(element);
+        else {
+            elementSet.messageSection.innerHTML = definitionSet.empty;
+            if (message instanceof HTMLElement)
+                elementSet.messageSection.appendChild(message)
+            else if (message instanceof Array) {
+                for (let element of message)
+                    if (!element instanceof HTMLElement) return;
+                for (let element of message)
+                    elementSet.messageSection.appendChild(element);
+            } //if
         } //if
     }; //setMessage
     // message is HTML content, HTMLElement or array of HTMLElement:
@@ -266,7 +279,7 @@ const modalDialog = (() => {
         elementSet.dialog.onfocus = () => restoreFocus();
     }; //this.show
 
-    const result = { show, defaultSingleButton };
+    const result = { show, defaultSingleButton, metadata };
     Object.defineProperties(result, {
         defaultButtons: { get() { return [ defaultSingleButton(definitionSet.names.Close) ]; } },
         defaultOptions: { get() { return structuredClone(defaultOptions); } },
