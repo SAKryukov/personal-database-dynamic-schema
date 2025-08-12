@@ -191,9 +191,14 @@ class Table {
             } //switch
             event.preventDefault(); 
         }; //this.#table.onkeydown
-        document.body.oncopy = () =>
+        document.body.oncopy = () => {
+            if (this.#editingCell)
+                return;
             this.toClipboard();
+        }; //document.body.oncopy
         document.body.onpaste = () => {
+            if (this.#editingCell)
+                return;
             if (!this.#isReadOnly)
                 this.fromClipboard();   
         }; //document.body.onpaste
