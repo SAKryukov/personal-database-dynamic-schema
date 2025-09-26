@@ -10,7 +10,7 @@ http://www.codeproject.com/Members/SAKryukov
 
 function menuGenerator (container, focusElement) {
 
-    const version = "1.3.0";
+    const version = "1.4.0";
     if (!new.target) return version;
 
     if (!container) return;
@@ -565,8 +565,10 @@ function menuGenerator (container, focusElement) {
             if (!isContextMenu) {
                 const data = elementMap.get(event.target);
                 select(data.element, false);
-            }
-                else event.target.style.display = definitionSet.css.hide;
+            } else {
+                event.target.style.display = definitionSet.css.hide;
+                focusElement?.focus();
+            } //if
             if (onBlurHandler)
                 onBlurHandler(event);
         } //selectElement.onblur

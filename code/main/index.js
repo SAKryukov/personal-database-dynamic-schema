@@ -44,7 +44,7 @@ window.onload = () => {
     commandSetMap.table.doubleClickHandler = commandSet.doubleClickHandler;
     const mainMenu = new menuGenerator(elements.mainMenu, commandSetMap.table);
 
-    const contextMenu = new menuGenerator(elements.contextMenu);
+    const contextMenu = new menuGenerator(elements.contextMenu, commandSetMap.table);
     (() => { //menu:
         mainMenu.options = { afterActionBehavior: { hide: true } };
         mainMenu.subscribe(commandSetMap);
