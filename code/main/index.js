@@ -42,7 +42,7 @@ window.onload = () => {
     const commandSetMap = commandSet.commandSetMap;
 
     commandSetMap.table.doubleClickHandler = commandSet.doubleClickHandler;
-    const mainMenu = new menuGenerator(elements.mainMenu);
+    const mainMenu = new menuGenerator(elements.mainMenu, commandSetMap.table);
 
     const contextMenu = new menuGenerator(elements.contextMenu);
     (() => { //menu:
